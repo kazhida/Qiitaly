@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="bg_actionbar">#75D72A</color>
     <color name="off_black">#333333</color>
+    <color name="qiita_green">#59BB0C</color>
+    <color name="qiita_highlight">#60C90D</color>
+    <color name="qiita_background">#EEF2EA</color>
+
+    <color name="caution_text">#FF3333</color>
 
 </resources>

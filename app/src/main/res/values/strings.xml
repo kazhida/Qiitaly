@@ -13,5 +13,9 @@
     <string name="user_name">ユーザ名</string>
     <string name="password">パスワード</string>
     <string name="login">ログイン</string>
+    <string name="search">検索</string>
 
+
+    <string name="err_empty_user_name">ユーザ名を入力してください。</string>
+    <string name="err_empty_password">パスワードを入力してください。</string>
 </resources>

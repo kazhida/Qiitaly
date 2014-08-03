@@ -9,6 +9,7 @@ buildscript {
 apply plugin: 'com.android.application'
 
 repositories {
+    maven { url "http://dl.bintray.com/populov/maven" }
     mavenCentral()
 }
 
@@ -29,13 +30,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile 'com.android.support:support-v4:20.+'
     compile 'com.google.code.gson:gson:2.2.+'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.+'
     compile 'com.jakewharton:butterknife:5.1.+'
+    compile 'com.viewpagerindicator:library:2.4.+@aar'
 }

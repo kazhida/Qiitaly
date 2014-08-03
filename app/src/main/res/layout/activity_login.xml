@@ -19,7 +19,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:textColorHint="@color/caution_text"
+            />
     <TextView
             style="@style/CaptionLabel"
             android:layout_width="wrap_content"
@@ -32,11 +34,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword"
+            android:textColorHint="@color/caution_text"
+            />
     <Button
             android:id="@+id/login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/login"
+            android:background="@drawable/bg_qiita_button"
             />
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.abplus.qiitaly.app.models;
+package com.abplus.qiitaly.app.api.models;
 
 import com.google.gson.annotations.Expose;
 import lombok.Getter;
