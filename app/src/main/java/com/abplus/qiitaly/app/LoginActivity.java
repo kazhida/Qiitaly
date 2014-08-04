@@ -1,15 +1,15 @@
 package com.abplus.qiitaly.app;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
+import com.abplus.qiitaly.app.api.models.Auth;
+import com.abplus.qiitaly.app.utils.Dialogs;
 
 /**
  * ログイン用アクティビティ
@@ -66,18 +66,19 @@ public class LoginActivity extends Activity {
         if (userName != null && password != null) {
             Backend.sharedInstance().auth(userName, password, new Backend.AuthCallback() {
                 @Override
-                public void onSuccess(Backend.AuthResponse authResponse) {
+                public void onSuccess(Auth auth) {
                     finish();
                 }
 
                 @Override
                 public void onException(Throwable throwable) {
                     throwable.printStackTrace();
+                    Dialogs.errorMessage(LoginActivity.this, R.string.err_login, throwable.getLocalizedMessage());
                 }
 
                 @Override
                 public void onError(String errorReason) {
-                    Log.e("LoginActivity", errorReason);
+                    Dialogs.errorMessage(LoginActivity.this, R.string.err_login, errorReason);
                 }
             });
         } else {

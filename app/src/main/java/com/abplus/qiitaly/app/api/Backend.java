@@ -3,12 +3,12 @@ package com.abplus.qiitaly.app.api;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import com.abplus.qiitaly.app.api.models.Auth;
 import com.abplus.qiitaly.app.api.models.Item;
 import com.abplus.qiitaly.app.api.models.Tag;
 import com.abplus.qiitaly.app.api.models.User;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -16,6 +16,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -45,12 +46,12 @@ public class Backend {
     }
 
     public interface AuthCallback extends CommonCallback {
-        void onSuccess(AuthResponse authResponse);
+        void onSuccess(Auth auth);
     }
 
-    public interface RateLimitCallback extends CommonCallback {
-        void onSuccess(RateLimitResponse rateLimit);
-    }
+//    public interface RateLimitCallback extends CommonCallback {
+//        void onSuccess(RateLimitResponse rateLimit);
+//    }
 
     public interface UserCallback extends CommonCallback {
         void onSuccess(User user);
@@ -83,62 +84,49 @@ public class Backend {
         return instance;
     }
 
-    public static class AuthResponse {
-        @Getter @Expose
-        private String token;
-        @Getter @Expose @SerializedName("url_name")
-        private String urlName;
-
-        @SuppressWarnings("unused")
-        public AuthResponse() {}
-
-        public AuthResponse(AuthResponse src) {
-            this.token = src.token;
-            this.urlName = src.urlName;
-        }
-    }
-
     private static class ErrorResponse {
         @Getter @Expose
         String error;
     }
 
-    public static class RateLimitResponse {
-        @Expose
-        private Integer remaining;
-        @Expose
-        private Integer limit;
+//    public static class RateLimitResponse {
+//        @Expose
+//        private Integer remaining;
+//        @Expose
+//        private Integer limit;
+//
+//        public int getRemaining() {
+//            return remaining == null ? 0 : remaining;
+//        }
+//
+//        public int getLimit() {
+//            return limit == null ? 0 : limit;
+//        }
+//    }
 
-        public int getRemaining() {
-            return remaining == null ? 0 : remaining;
-        }
+    private Auth auth;
+    @Getter
+    private User current;
+//    private RateLimitResponse rateLimit = new RateLimitResponse();
 
-        public int getLimit() {
-            return limit == null ? 0 : limit;
-        }
-    }
-
-    private AuthResponse auth;
-    private RateLimitResponse rateLimit = new RateLimitResponse();
-
-    public String urlName() {
+    public String getUrlName() {
         if (auth == null)  {
             return null;
         } else {
-            return auth.urlName;
+            return auth.getUrlName();
         }
     }
 
     public boolean isLoggedIn() {
-        return auth != null && auth.token != null && auth.urlName != null;
+        return auth != null && auth.getToken() != null && auth.getUrlName() != null;
     }
 
     public void logout() {
         auth = null;
     }
 
-    private void setAuth(AuthResponse auth) {
-        this.auth = new AuthResponse(auth);
+    private void setAuth(Auth auth) {
+        this.auth = new Auth(auth);
     }
 
     private static class ResponseException extends RuntimeException {
@@ -151,7 +139,7 @@ public class Backend {
         }
     }
 
-    private static class RequestBuilder {
+    private class RequestBuilder {
 
         Handler handler = new Handler();
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -164,6 +152,9 @@ public class Backend {
             if (! path.startsWith("/")) path = "/" + path;
             if (! path.endsWith("/"))   path = path + "/";
             builder.path(PATH + path);
+            if (auth != null) {
+                builder.appendQueryParameter("token", auth.getToken());
+            }
             uri = builder.build();
         }
 
@@ -176,6 +167,10 @@ public class Backend {
             HttpEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
             post.setEntity(entity);
             return post;
+        }
+
+        HttpGet buildGet() {
+            return new HttpGet(uri.toString());
         }
 
         void handleException(final CommonCallback callback, final Throwable throwable) {
@@ -235,28 +230,55 @@ public class Backend {
         }
     }
 
+    //token取得
     //POST /api/v1/auth
     public void auth(String userName, String password, final AuthCallback callback) {
         final RequestBuilder builder = new RequestBuilder("auth");
         builder.addParam("url_name", userName);
         builder.addParam("password", password);
 
-        new AsyncTask<Void, Void, AuthResponse>() {
+        new AsyncTask<Void, Void, Auth>() {
             @Override
-            protected AuthResponse doInBackground(Void... voids) {
+            protected Auth doInBackground(Void... voids) {
                 try {
                     String entity = executeRequest(builder.buildPost());
-                    return new Gson().fromJson(entity, AuthResponse.class);
+                    return new Gson().fromJson(entity, Auth.class);
                 } catch (Exception e) {
                     builder.handleException(callback, e);
                     return null;
                 }
             }
             @Override
-            protected void onPostExecute(AuthResponse auth) {
+            protected void onPostExecute(Auth auth) {
                 if (auth != null) {
                     setAuth(auth);
                     callback.onSuccess(auth);
+                }
+            }
+        }.execute();
+    }
+
+    //リクエストユーザーの情報取得
+    //GET /api/v1/user
+    public void user(final UserCallback callback) {
+        final RequestBuilder builder = new RequestBuilder("user");
+
+        new AsyncTask<Void, Void, User>() {
+            @Override
+            protected User doInBackground(Void... voids) {
+                try {
+                    String entity = executeRequest(builder.buildGet());
+                    return new Gson().fromJson(entity, User.class);
+                } catch (Exception e) {
+                    builder.handleException(callback, e);
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(User user) {
+                if (auth != null) {
+                    current = user;
+                    callback.onSuccess(user);
                 }
             }
         }.execute();
