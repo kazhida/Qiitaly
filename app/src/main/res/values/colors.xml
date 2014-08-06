@@ -2,6 +2,8 @@
 <resources>
 
     <color name="bg_actionbar">#75D72A</color>
+    <color name="bg_indicator">#A4E673</color>
+
     <color name="off_black">#333333</color>
     <color name="qiita_green">#59BB0C</color>
     <color name="qiita_highlight">#60C90D</color>

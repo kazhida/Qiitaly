@@ -1,6 +1,7 @@
 package com.abplus.qiitaly.app.utils;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import com.abplus.qiitaly.app.R;
 
@@ -25,5 +26,20 @@ public class Dialogs {
         builder.setMessage(message);
         builder.setPositiveButton(R.string.close, null);
         builder.create().show();
+    }
+
+    public static ProgressDialog startLoading(Context context, String caption) {
+        ProgressDialog dialog = new ProgressDialog(context);
+        if (caption != null) {
+            dialog.setTitle(caption);
+        } else {
+            dialog.setTitle(R.string.loading);
+        }
+        dialog.show();
+        return dialog;
+    }
+
+    public static ProgressDialog startLoading(Context context) {
+        return startLoading(context, null);
     }
 }

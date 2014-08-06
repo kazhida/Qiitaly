@@ -2,6 +2,7 @@ package com.abplus.qiitaly.app;
 
 
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.*;
@@ -14,15 +15,21 @@ import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
 import com.abplus.qiitaly.app.api.models.User;
 import com.abplus.qiitaly.app.utils.Dialogs;
-import com.viewpagerindicator.TabPageIndicator;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.viewpagerindicator.TitlePageIndicator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class MainActivity extends FragmentActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     @InjectView(R.id.indicator)
-    TabPageIndicator indicator;
+    TitlePageIndicator indicator;
     @InjectView(R.id.pager)
     ViewPager pager;
     @InjectView(R.id.drawer_layout)
@@ -36,6 +43,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
     private NavigationDrawerFragment drawer;
     private Screen currentScreen = Screen.Home;
+    private ListPagerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +58,13 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         drawer = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         drawer.setUp(R.id.navigation_drawer, drawerLayout);
 
-        pager.setAdapter(new ListPagerAdapter());
+        adapter = new ListPagerAdapter();
+        pager.setAdapter(adapter);
         indicator.setViewPager(pager);
+
+        Backend.sharedInstance().restoreAuth(this);
+
+        initImageLoader();
     }
 
     @Override
@@ -63,20 +76,24 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         } else if (Backend.sharedInstance().getCurrent() != null) {
             setupPages();
         } else {
+            final ProgressDialog dialog = Dialogs.startLoading(this);
             Backend.sharedInstance().user(new Backend.UserCallback() {
                 @Override
                 public void onSuccess(User user) {
+                    dialog.dismiss();
                     setupPages();
                 }
 
                 @Override
                 public void onException(Throwable throwable) {
                     throwable.printStackTrace();
+                    dialog.dismiss();
                     Dialogs.errorMessage(MainActivity.this, R.string.err_login, throwable.getLocalizedMessage());
                 }
 
                 @Override
                 public void onError(String errorReason) {
+                    dialog.dismiss();
                     Dialogs.errorMessage(MainActivity.this, R.string.err_login, errorReason);
                 }
             });
@@ -90,9 +107,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
     }
 
     private void setupPages() {
-        ListPagerAdapter adapter = new HomePagerAdapter();
-        pager.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        adapter.resetForHome();
     }
 
     @Override
@@ -128,36 +143,58 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return null;
+            return fragments.get(position).getTitle();
         }
 
         @Override
         public int getCount() {
             return fragments.size();
         }
-    }
 
-    private class HomePagerAdapter extends ListPagerAdapter {
-
-        HomePagerAdapter() {
-            super();
-            fragments.add(new TopicListFragment().forWhatsNew());
-            fragments.add(new TopicListFragment().forStocks());
-            fragments.add(new TopicListFragment().forUser(Backend.sharedInstance().getUrlName()));
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return getString(R.string.home_whats_new);
-                case 1:
-                    return getString(R.string.home_stocks);
-                case 2:
-                    return getString(R.string.home_self_topic);
-                default:
-                    return null;
-            }
+        void resetForHome() {
+            fragments.add(new TopicListFragment().forWhatsNew(getString(R.string.home_whats_new)));
+            fragments.add(new TopicListFragment().forStocks(getString(R.string.home_stocks)));
+            fragments.add(new TopicListFragment().forUser(getString(R.string.home_self_topic), Backend.sharedInstance().getUrlName()));
+            notifyDataSetChanged();
         }
     }
+
+    private void initImageLoader() {
+        File cacheDir = StorageUtils.getCacheDirectory(this);
+
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .cacheOnDisc()
+                .build();
+
+        ImageLoader.getInstance().init(
+                new ImageLoaderConfiguration.Builder(this)
+                        .discCache(new UnlimitedDiscCache(cacheDir))
+                        .defaultDisplayImageOptions(options)
+                        .build()
+        );
+    }
+
+//    private class HomePagerAdapter extends ListPagerAdapter {
+//
+//        HomePagerAdapter() {
+//            super();
+//            fragments.add(new TopicListFragment().forWhatsNew());
+//            fragments.add(new TopicListFragment().forStocks());
+//            fragments.add(new TopicListFragment().forUser(Backend.sharedInstance().getUrlName()));
+//        }
+//
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            switch (position) {
+//                case 0:
+//                    return getString(R.string.home_whats_new);
+//                case 1:
+//                    return getString(R.string.home_stocks);
+//                case 2:
+//                    return getString(R.string.home_self_topic);
+//                default:
+//                    return null;
+//            }
+//        }
+//    }
 }

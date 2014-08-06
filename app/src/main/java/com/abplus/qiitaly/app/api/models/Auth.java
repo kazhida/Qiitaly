@@ -23,4 +23,9 @@ public class Auth {
         this.token = src.token;
         this.urlName = src.urlName;
     }
+
+    public Auth(String token, String urlName) {
+        this.token = token;
+        this.urlName = urlName;
+    }
 }

@@ -1,8 +1,12 @@
 package com.abplus.qiitaly.app.api;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import com.abplus.qiitaly.app.api.models.Auth;
 import com.abplus.qiitaly.app.api.models.Item;
 import com.abplus.qiitaly.app.api.models.Tag;
@@ -37,8 +41,10 @@ import java.util.List;
 public class Backend {
 
     private static final String SCHEMA = "https";
-    private static final String HOST = "qiita.com";
-    private static final String PATH = "/api/v1";
+    private static final String HOST   = "qiita.com";
+    private static final String PATH   = "/api/v1";
+    private static final String KEY_TOKEN    = "KEY_TOKEN";
+    private static final String KEY_URL_NAME = "KEY_URL_NAME";
 
     public interface CommonCallback {
         void onException(Throwable throwable);
@@ -57,18 +63,22 @@ public class Backend {
         void onSuccess(User user);
     }
 
+    @SuppressWarnings("unused")
     public interface UsersCallback extends CommonCallback {
         void onSuccess(List<User> users);
     }
 
+    @SuppressWarnings("unused")
     public interface ItemCallback extends CommonCallback {
         void onSuccess(Item item);
     }
 
+    @SuppressWarnings("unused")
     public interface ItemsCallback extends CommonCallback {
         void onSuccess(List<Item> items);
     }
 
+    @SuppressWarnings("unused")
     public interface TagsCallback extends CommonCallback {
         void onSuccess(List<Tag> tags);
     }
@@ -105,7 +115,7 @@ public class Backend {
 //    }
 
     private Auth auth;
-    @Getter
+    @Getter @SuppressWarnings("unused")
     private User current;
 //    private RateLimitResponse rateLimit = new RateLimitResponse();
 
@@ -117,12 +127,36 @@ public class Backend {
         }
     }
 
+    public void restoreAuth(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String token    = preferences.getString(KEY_TOKEN, null);
+        String urlName  = preferences.getString(KEY_URL_NAME, null);
+        if (token != null && urlName != null) {
+            auth = new Auth(token, urlName);
+        }
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    private void storeAuth(Context context) {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        if (auth != null) {
+            editor.putString(KEY_TOKEN,     auth.getToken());
+            editor.putString(KEY_URL_NAME,  auth.getUrlName());
+        } else {
+            editor.remove(KEY_TOKEN);
+            editor.remove(KEY_URL_NAME);
+        }
+        editor.commit();
+    }
+
     public boolean isLoggedIn() {
         return auth != null && auth.getToken() != null && auth.getUrlName() != null;
     }
 
-    public void logout() {
+    @SuppressWarnings("unused")
+    public void logout(Context context) {
         auth = null;
+        storeAuth(context);
     }
 
     private void setAuth(Auth auth) {
@@ -142,7 +176,7 @@ public class Backend {
     private class RequestBuilder {
 
         Handler handler = new Handler();
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        List<NameValuePair> params = new ArrayList<>();
         Uri uri;
 
         RequestBuilder(String path) {
@@ -183,6 +217,7 @@ public class Backend {
                             case HttpStatus.SC_BAD_REQUEST:
                             case HttpStatus.SC_FORBIDDEN:
                             case HttpStatus.SC_NOT_FOUND:
+                            case HttpStatus.SC_UNAUTHORIZED:
                                 ErrorResponse errorResponse = new Gson().fromJson(responseException.getMessage(), ErrorResponse.class);
                                 callback.onError(errorResponse.error);
                                 break;
@@ -232,7 +267,7 @@ public class Backend {
 
     //token取得
     //POST /api/v1/auth
-    public void auth(String userName, String password, final AuthCallback callback) {
+    public void auth(final Context context, String userName, String password, final AuthCallback callback) {
         final RequestBuilder builder = new RequestBuilder("auth");
         builder.addParam("url_name", userName);
         builder.addParam("password", password);
@@ -252,6 +287,7 @@ public class Backend {
             protected void onPostExecute(Auth auth) {
                 if (auth != null) {
                     setAuth(auth);
+                    storeAuth(context);
                     callback.onSuccess(auth);
                 }
             }

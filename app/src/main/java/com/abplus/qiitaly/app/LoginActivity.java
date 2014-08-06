@@ -1,6 +1,7 @@
 package com.abplus.qiitaly.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -64,20 +65,25 @@ public class LoginActivity extends Activity {
         String password = getEditText(passwordText);
 
         if (userName != null && password != null) {
-            Backend.sharedInstance().auth(userName, password, new Backend.AuthCallback() {
+            final ProgressDialog dialog = Dialogs.startLoading(LoginActivity.this);
+
+            Backend.sharedInstance().auth(this, userName, password, new Backend.AuthCallback() {
                 @Override
                 public void onSuccess(Auth auth) {
+                    dialog.dismiss();
                     finish();
                 }
 
                 @Override
                 public void onException(Throwable throwable) {
                     throwable.printStackTrace();
+                    dialog.dismiss();
                     Dialogs.errorMessage(LoginActivity.this, R.string.err_login, throwable.getLocalizedMessage());
                 }
 
                 @Override
                 public void onError(String errorReason) {
+                    dialog.dismiss();
                     Dialogs.errorMessage(LoginActivity.this, R.string.err_login, errorReason);
                 }
             });
