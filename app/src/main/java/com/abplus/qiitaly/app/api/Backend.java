@@ -13,6 +13,7 @@ import com.abplus.qiitaly.app.api.models.Tag;
 import com.abplus.qiitaly.app.api.models.User;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
+import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -312,9 +313,109 @@ public class Backend {
             }
             @Override
             protected void onPostExecute(User user) {
-                if (auth != null) {
+                if (user != null) {
                     current = user;
                     callback.onSuccess(user);
+                }
+            }
+        }.execute();
+    }
+
+    //新着投稿の取得
+    //GET /api/v1/userItems
+    public void items(final ItemsCallback callback) {
+        final RequestBuilder builder = new RequestBuilder("items");
+
+        new AsyncTask<Void, Void, List<Item>>() {
+            @Override
+            protected List<Item> doInBackground(Void... voids) {
+                try {
+                    String entity = executeRequest(builder.buildGet());
+                    return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
+                } catch (Exception e) {
+                    builder.handleException(callback, e);
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(List<Item> items) {
+                if (items != null) {
+                    callback.onSuccess(items);
+                }
+            }
+        }.execute();
+    }
+
+    //自分のストックした投稿の取得
+    //GET /api/v1/stocks
+    public void stocks(final ItemsCallback callback) {
+        final RequestBuilder builder = new RequestBuilder("stocks");
+
+        new AsyncTask<Void, Void, List<Item>>() {
+            @Override
+            protected List<Item> doInBackground(Void... voids) {
+                try {
+                    String entity = executeRequest(builder.buildGet());
+                    return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
+                } catch (Exception e) {
+                    builder.handleException(callback, e);
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(List<Item> items) {
+                if (items != null) {
+                    callback.onSuccess(items);
+                }
+            }
+        }.execute();
+    }
+
+    //特定ユーザーの投稿取得
+    //GET /api/v1/users/:url_name/userItems
+    public void userItems(String urlName, final ItemsCallback callback) {
+        final RequestBuilder builder = new RequestBuilder("uses/" + urlName + "/items");
+
+        new AsyncTask<Void, Void, List<Item>>() {
+            @Override
+            protected List<Item> doInBackground(Void... voids) {
+                try {
+                    String entity = executeRequest(builder.buildGet());
+                    return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
+                } catch (Exception e) {
+                    builder.handleException(callback, e);
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(List<Item> items) {
+                if (items != null) {
+                    callback.onSuccess(items);
+                }
+            }
+        }.execute();
+    }
+
+    //特定タグの投稿取得
+    //GET /api/v1/tags/:url_name/userItems
+    public void tagItems(String tag, final ItemsCallback callback) {
+        final RequestBuilder builder = new RequestBuilder("uses/" + tag + "/items");
+
+        new AsyncTask<Void, Void, List<Item>>() {
+            @Override
+            protected List<Item> doInBackground(Void... voids) {
+                try {
+                    String entity = executeRequest(builder.buildGet());
+                    return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
+                } catch (Exception e) {
+                    builder.handleException(callback, e);
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(List<Item> items) {
+                if (items != null) {
+                    callback.onSuccess(items);
                 }
             }
         }.execute();

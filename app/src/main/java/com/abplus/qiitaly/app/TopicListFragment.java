@@ -61,19 +61,19 @@ public class TopicListFragment extends Fragment {
         return this;
     }
 
-    public TopicListFragment forUser(String title, String urlName) {
+    public TopicListFragment byUser(String title, String urlName) {
         setArguments(sourceBundle(title, LIST_SOURCE_USER, URL_NAME, urlName));
         return this;
     }
 
     @SuppressWarnings("unused")
-    public TopicListFragment forTag(String title, String tag) {
+    public TopicListFragment byTag(String title, String tag) {
         setArguments(sourceBundle(title, LIST_SOURCE_TAG, TAG, tag));
         return this;
     }
 
     @SuppressWarnings("unused")
-    public TopicListFragment forSearch(String query) {
+    public TopicListFragment bySearch(String query) {
         setArguments(sourceBundle(query, LIST_SOURCE_SEARCH, QUERY, query));
         return this;
     }
@@ -94,27 +94,25 @@ public class TopicListFragment extends Fragment {
 
         title = getArguments().getString(TITLE);
 
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-
         switch (getArguments().getInt(LIST_SOURCE)) {
             case LIST_SOURCE_WHATS_NEW:
-                listView.setAdapter(new TopicListAdapter.ForWhatsNew(inflater));
+                listView.setAdapter(new TopicListAdapter.ForWhatsNew(getActivity()));
                 break;
             case LIST_SOURCE_STOCKS:
-                listView.setAdapter(new TopicListAdapter.ForStocks(inflater));
+                listView.setAdapter(new TopicListAdapter.ForStocks(getActivity()));
                 break;
             case LIST_SOURCE_USER:
-                listView.setAdapter(new TopicListAdapter.ByUser(inflater, getArguments().getString(URL_NAME)));
+                listView.setAdapter(new TopicListAdapter.ByUser(getActivity(), getArguments().getString(URL_NAME)));
                 break;
             case LIST_SOURCE_TAG:
-                listView.setAdapter(new TopicListAdapter.ByTag(inflater, getArguments().getString(TAG)));
+                listView.setAdapter(new TopicListAdapter.ByTag(getActivity(), getArguments().getString(TAG)));
                 break;
             case LIST_SOURCE_SEARCH:
-                listView.setAdapter(new TopicListAdapter.BySearch(inflater, getArguments().getString(QUERY)));
+                listView.setAdapter(new TopicListAdapter.BySearch(getActivity(), getArguments().getString(QUERY)));
                 break;
             default:
                 //  こないはず
-                listView.setAdapter(new TopicListAdapter(inflater));
+                listView.setAdapter(new TopicListAdapter(getActivity()));
                 break;
         }
 

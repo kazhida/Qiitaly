@@ -154,7 +154,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         void resetForHome() {
             fragments.add(new TopicListFragment().forWhatsNew(getString(R.string.home_whats_new)));
             fragments.add(new TopicListFragment().forStocks(getString(R.string.home_stocks)));
-            fragments.add(new TopicListFragment().forUser(getString(R.string.home_self_topic), Backend.sharedInstance().getUrlName()));
+            fragments.add(new TopicListFragment().byUser(getString(R.string.home_self_topic), Backend.sharedInstance().getUrlName()));
             notifyDataSetChanged();
         }
     }
@@ -180,7 +180,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 //            super();
 //            fragments.add(new TopicListFragment().forWhatsNew());
 //            fragments.add(new TopicListFragment().forStocks());
-//            fragments.add(new TopicListFragment().forUser(Backend.sharedInstance().getUrlName()));
+//            fragments.add(new TopicListFragment().byUser(Backend.sharedInstance().getUrlName()));
 //        }
 //
 //        @Override

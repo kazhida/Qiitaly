@@ -1,5 +1,7 @@
 package com.abplus.qiitaly.app;
 
+import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import com.abplus.qiitaly.app.api.Backend;
 import com.abplus.qiitaly.app.api.models.Item;
+import com.abplus.qiitaly.app.utils.Dialogs;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -24,10 +28,12 @@ public class TopicListAdapter extends BaseAdapter {
     protected List<Item> items;
     protected List<Item> topics = new ArrayList<>();
     protected LayoutInflater inflater;
+    protected Context context;
 
-    TopicListAdapter(LayoutInflater inflater) {
+    TopicListAdapter(Activity activity) {
         super();
-        this.inflater = inflater;
+        inflater = activity.getLayoutInflater();
+        context = activity;
     }
 
     @Override
@@ -49,14 +55,11 @@ public class TopicListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
 
-        ViewHolder holder;
         if (view == null) {
             view = inflater.inflate(R.layout.topic_item, parent, false);
-            holder = new ViewHolder(view);
-            view.setTag(holder);
-        } else {
-            holder = (ViewHolder) view.getTag();
+            view.setTag(new ViewHolder(view));
         }
+        ViewHolder holder = (ViewHolder) view.getTag();
 
         Item item = topics.get(position);
 
@@ -67,6 +70,13 @@ public class TopicListAdapter extends BaseAdapter {
         ImageLoader.getInstance().displayImage(item.getUser().getProfileImageUrl(), holder.iconImage);
 
         return view;
+    }
+
+    protected void initItems(List<Item> items) {
+        this.items = items;
+        topics.clear();
+        topics.addAll(items);
+        notifyDataSetChanged();
     }
 
     protected class ViewHolder {
@@ -84,39 +94,79 @@ public class TopicListAdapter extends BaseAdapter {
         }
     }
 
+    private abstract class CommonItemsCallback implements Backend.ItemsCallback {
+        @Override
+        public void onException(Throwable throwable) {
+            throwable.printStackTrace();
+            Dialogs.errorMessage(context, R.string.err_login, throwable.getLocalizedMessage());
+        }
+
+        @Override
+        public void onError(String errorReason) {
+            Dialogs.errorMessage(context, R.string.err_login, errorReason);
+        }
+    }
 
     public static class ForWhatsNew extends TopicListAdapter {
 
-        ForWhatsNew(LayoutInflater inflater) {
-            super(inflater);
+        ForWhatsNew(Activity activity) {
+            super(activity);
+
+            Backend.sharedInstance().items(new CommonItemsCallback() {
+                @Override
+                public void onSuccess(List<Item> items) {
+                    initItems(items);
+                }
+            });
         }
     }
 
     public static class ForStocks extends TopicListAdapter {
 
-        ForStocks(LayoutInflater inflater) {
-            super(inflater);
+        ForStocks(Activity activity) {
+            super(activity);
+
+            Backend.sharedInstance().stocks(new CommonItemsCallback() {
+                @Override
+                public void onSuccess(List<Item> items) {
+                    initItems(items);
+                }
+            });
         }
     }
 
     public static class ByUser extends TopicListAdapter {
 
-        ByUser(LayoutInflater inflater, String urlName) {
-            super(inflater);
+        ByUser(Activity activity, String urlName) {
+            super(activity);
+
+            Backend.sharedInstance().userItems(urlName, new CommonItemsCallback() {
+                @Override
+                public void onSuccess(List<Item> items) {
+                    initItems(items);
+                }
+            });
         }
     }
 
     public static class ByTag extends TopicListAdapter {
 
-        ByTag(LayoutInflater inflater, String tag) {
-            super(inflater);
+        ByTag(Activity activity, String tag) {
+            super(activity);
+
+            Backend.sharedInstance().tagItems(tag, new CommonItemsCallback() {
+                @Override
+                public void onSuccess(List<Item> items) {
+                    initItems(items);
+                }
+            });
         }
     }
 
     public static class BySearch extends TopicListAdapter {
 
-        BySearch(LayoutInflater inflater, String query) {
-            super(inflater);
+        BySearch(Activity activity, String query) {
+            super(activity);
         }
     }
 }
