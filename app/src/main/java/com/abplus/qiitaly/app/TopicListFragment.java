@@ -10,7 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 投稿リストのフラグメント
@@ -78,8 +78,7 @@ public class TopicListFragment extends Fragment {
         return this;
     }
 
-    @Getter
-    private String title;
+    public String title;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -94,31 +93,33 @@ public class TopicListFragment extends Fragment {
 
         title = getArguments().getString(TITLE);
 
-        switch (getArguments().getInt(LIST_SOURCE)) {
-            case LIST_SOURCE_WHATS_NEW:
-                listView.setAdapter(new TopicListAdapter.ForWhatsNew(getActivity()));
-                break;
-            case LIST_SOURCE_STOCKS:
-                listView.setAdapter(new TopicListAdapter.ForStocks(getActivity()));
-                break;
-            case LIST_SOURCE_USER:
-                listView.setAdapter(new TopicListAdapter.ByUser(getActivity(), getArguments().getString(URL_NAME)));
-                break;
-            case LIST_SOURCE_TAG:
-                listView.setAdapter(new TopicListAdapter.ByTag(getActivity(), getArguments().getString(TAG)));
-                break;
-            case LIST_SOURCE_SEARCH:
-                listView.setAdapter(new TopicListAdapter.BySearch(getActivity(), getArguments().getString(QUERY)));
-                break;
-            default:
-                //  こないはず
-                listView.setAdapter(new TopicListAdapter(getActivity()));
-                break;
+        if (listView.getAdapter() == null) {
+            switch (getArguments().getInt(LIST_SOURCE)) {
+                case LIST_SOURCE_WHATS_NEW:
+                    listView.setAdapter(new TopicListAdapter.ForWhatsNew(getActivity()));
+                    break;
+                case LIST_SOURCE_STOCKS:
+                    listView.setAdapter(new TopicListAdapter.ForStocks(getActivity()));
+                    break;
+                case LIST_SOURCE_USER:
+                    listView.setAdapter(new TopicListAdapter.ByUser(getActivity(), getArguments().getString(URL_NAME)));
+                    break;
+                case LIST_SOURCE_TAG:
+                    listView.setAdapter(new TopicListAdapter.ByTag(getActivity(), getArguments().getString(TAG)));
+                    break;
+                case LIST_SOURCE_SEARCH:
+                    listView.setAdapter(new TopicListAdapter.BySearch(getActivity(), getArguments().getString(QUERY)));
+                    break;
+                default:
+                    //  こないはず
+                    listView.setAdapter(new TopicListAdapter(getActivity()));
+                    break;
+            }
         }
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(@NotNull AdapterView<?> adapterView, @NotNull View view, int i, long l) {
                 //todo: 詳細表示
             }
         });

@@ -14,6 +14,7 @@ import com.abplus.qiitaly.app.api.Backend;
 import com.abplus.qiitaly.app.api.models.Item;
 import com.abplus.qiitaly.app.utils.Dialogs;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class TopicListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NotNull ViewGroup parent) {
         View view = convertView;
 
         if (view == null) {
@@ -112,7 +113,7 @@ public class TopicListAdapter extends BaseAdapter {
         ForWhatsNew(Activity activity) {
             super(activity);
 
-            Backend.sharedInstance().items(new CommonItemsCallback() {
+            Backend.sharedInstance().items(false, new CommonItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
@@ -167,6 +168,13 @@ public class TopicListAdapter extends BaseAdapter {
 
         BySearch(Activity activity, String query) {
             super(activity);
+
+            Backend.sharedInstance().search(query, new CommonItemsCallback() {
+                @Override
+                public void onSuccess(List<Item> items) {
+                    initItems(items);
+                }
+            });
         }
     }
 }

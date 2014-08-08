@@ -19,7 +19,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -28,11 +27,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * APIでのやりとりをするクラス
@@ -180,15 +181,20 @@ public class Backend {
         List<NameValuePair> params = new ArrayList<>();
         Uri uri;
 
-        RequestBuilder(String path) {
+        RequestBuilder(String path, boolean withAuth, Map<String, String> params) {
             Uri.Builder builder = new Uri.Builder();
             builder.scheme(SCHEMA);
             builder.encodedAuthority(HOST);
             if (! path.startsWith("/")) path = "/" + path;
             if (! path.endsWith("/"))   path = path + "/";
             builder.path(PATH + path);
-            if (auth != null) {
+            if (auth != null && withAuth) {
                 builder.appendQueryParameter("token", auth.getToken());
+            }
+            if (params != null) {
+                for (String key: params.keySet()) {
+                    builder.appendQueryParameter(key, params.get(key));
+                }
             }
             uri = builder.build();
         }
@@ -217,7 +223,6 @@ public class Backend {
                         switch (responseException.statusCode) {
                             case HttpStatus.SC_BAD_REQUEST:
                             case HttpStatus.SC_FORBIDDEN:
-                            case HttpStatus.SC_NOT_FOUND:
                             case HttpStatus.SC_UNAUTHORIZED:
                                 ErrorResponse errorResponse = new Gson().fromJson(responseException.getMessage(), ErrorResponse.class);
                                 callback.onError(errorResponse.error);
@@ -241,41 +246,37 @@ public class Backend {
             final DefaultHttpClient httpClient = new DefaultHttpClient();
 
             try {
-                return httpClient.execute(request, new ResponseHandler<String>() {
-                    @Override
-                    public String handleResponse(final HttpResponse httpResponse) throws ResponseException, IOException {
-                        int statusCode = httpResponse.getStatusLine().getStatusCode();
-                        String entity = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
-                        switch (statusCode) {
-                            case HttpStatus.SC_OK:
-                                return entity;
-                            case HttpStatus.SC_NO_CONTENT:
-                                return "";
-                            case HttpStatus.SC_BAD_REQUEST:
-                            case HttpStatus.SC_FORBIDDEN:
-                            case HttpStatus.SC_NOT_FOUND:
-                                throw new ResponseException(statusCode, entity);
-                            default:
-                                throw new ResponseException(statusCode, httpResponse.getStatusLine() + ": \n" +entity);
-                        }
-                    }
-                });
+                HttpResponse httpResponse = httpClient.execute(request);
+                int statusCode = httpResponse.getStatusLine().getStatusCode();
+                String entity = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+                switch (statusCode) {
+                    case HttpStatus.SC_OK:
+                        return entity;
+                    case HttpStatus.SC_NO_CONTENT:
+                        return "";
+                    case HttpStatus.SC_BAD_REQUEST:
+                    case HttpStatus.SC_FORBIDDEN:
+                    case HttpStatus.SC_UNAUTHORIZED:
+                        throw new ResponseException(statusCode, entity);
+                    default:
+                        throw new ResponseException(statusCode, httpResponse.getStatusLine() + ": \n" +entity);
+                }
             } finally {
                 httpClient.getConnectionManager().shutdown();
             }
         }
     }
 
-    //token取得
-    //POST /api/v1/auth
+    //  token取得
+    //  POST /api/v1/auth
     public void auth(final Context context, String userName, String password, final AuthCallback callback) {
-        final RequestBuilder builder = new RequestBuilder("auth");
+        final RequestBuilder builder = new RequestBuilder("auth", true, null);
         builder.addParam("url_name", userName);
         builder.addParam("password", password);
 
         new AsyncTask<Void, Void, Auth>() {
             @Override
-            protected Auth doInBackground(Void... voids) {
+            protected Auth doInBackground(@Nullable Void... voids) {
                 try {
                     String entity = executeRequest(builder.buildPost());
                     return new Gson().fromJson(entity, Auth.class);
@@ -285,7 +286,7 @@ public class Backend {
                 }
             }
             @Override
-            protected void onPostExecute(Auth auth) {
+            protected void onPostExecute(@Nullable Auth auth) {
                 if (auth != null) {
                     setAuth(auth);
                     storeAuth(context);
@@ -295,14 +296,14 @@ public class Backend {
         }.execute();
     }
 
-    //リクエストユーザーの情報取得
-    //GET /api/v1/user
+    //  リクエストユーザーの情報取得
+    //  GET /api/v1/user
     public void user(final UserCallback callback) {
-        final RequestBuilder builder = new RequestBuilder("user");
+        final RequestBuilder builder = new RequestBuilder("user", true, null);
 
         new AsyncTask<Void, Void, User>() {
             @Override
-            protected User doInBackground(Void... voids) {
+            protected User doInBackground(@Nullable Void... voids) {
                 try {
                     String entity = executeRequest(builder.buildGet());
                     return new Gson().fromJson(entity, User.class);
@@ -312,7 +313,7 @@ public class Backend {
                 }
             }
             @Override
-            protected void onPostExecute(User user) {
+            protected void onPostExecute(@Nullable User user) {
                 if (user != null) {
                     current = user;
                     callback.onSuccess(user);
@@ -321,14 +322,64 @@ public class Backend {
         }.execute();
     }
 
-    //新着投稿の取得
-    //GET /api/v1/userItems
-    public void items(final ItemsCallback callback) {
-        final RequestBuilder builder = new RequestBuilder("items");
+    //  特定ユーザーのフォローしているユーザー取得
+    //  GET /api/v1/users/:url_name/following_users
+    public void usersFollowingUsers(String urlName, final UsersCallback callback) {
+        final RequestBuilder builder = new RequestBuilder("users/" + urlName + "/following_users", true, null);
+
+        new AsyncTask<Void, Void, List<User>>() {
+            @Override
+            protected List<User> doInBackground(@Nullable Void... voids) {
+                try {
+                    String entity = executeRequest(builder.buildGet());
+                    return new Gson().fromJson(entity, new TypeToken<List<User>>(){}.getType());
+                } catch (Exception e) {
+                    builder.handleException(callback, e);
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(@Nullable List<User> users) {
+                if (users != null) {
+                    callback.onSuccess(users);
+                }
+            }
+        }.execute();
+    }
+
+    //  特定ユーザーのフォローしているタグ取得
+    //  GET /api/v1/users/:url_name/following_tags
+    public void usersFollowingTags(String urlName, final TagsCallback callback) {
+        final RequestBuilder builder = new RequestBuilder("users/" + urlName + "/following_tags", true, null);
+
+        new AsyncTask<Void, Void, List<Tag>>() {
+            @Override
+            protected List<Tag> doInBackground(@Nullable Void... voids) {
+                try {
+                    String entity = executeRequest(builder.buildGet());
+                    return new Gson().fromJson(entity, new TypeToken<List<Tag>>(){}.getType());
+                } catch (Exception e) {
+                    builder.handleException(callback, e);
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(@Nullable List<Tag> tags) {
+                if (tags != null) {
+                    callback.onSuccess(tags);
+                }
+            }
+        }.execute();
+    }
+
+    //  新着投稿の取得
+    //  GET /api/v1/items
+    public void items(boolean withAuth, final ItemsCallback callback) {
+        final RequestBuilder builder = new RequestBuilder("items", withAuth, null);
 
         new AsyncTask<Void, Void, List<Item>>() {
             @Override
-            protected List<Item> doInBackground(Void... voids) {
+            protected List<Item> doInBackground(@Nullable Void... voids) {
                 try {
                     String entity = executeRequest(builder.buildGet());
                     return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
@@ -338,7 +389,7 @@ public class Backend {
                 }
             }
             @Override
-            protected void onPostExecute(List<Item> items) {
+            protected void onPostExecute(@Nullable List<Item> items) {
                 if (items != null) {
                     callback.onSuccess(items);
                 }
@@ -349,11 +400,11 @@ public class Backend {
     //自分のストックした投稿の取得
     //GET /api/v1/stocks
     public void stocks(final ItemsCallback callback) {
-        final RequestBuilder builder = new RequestBuilder("stocks");
+        final RequestBuilder builder = new RequestBuilder("stocks", true, null);
 
         new AsyncTask<Void, Void, List<Item>>() {
             @Override
-            protected List<Item> doInBackground(Void... voids) {
+            protected List<Item> doInBackground(@Nullable Void... voids) {
                 try {
                     String entity = executeRequest(builder.buildGet());
                     return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
@@ -363,7 +414,7 @@ public class Backend {
                 }
             }
             @Override
-            protected void onPostExecute(List<Item> items) {
+            protected void onPostExecute(@Nullable List<Item> items) {
                 if (items != null) {
                     callback.onSuccess(items);
                 }
@@ -374,11 +425,11 @@ public class Backend {
     //特定ユーザーの投稿取得
     //GET /api/v1/users/:url_name/userItems
     public void userItems(String urlName, final ItemsCallback callback) {
-        final RequestBuilder builder = new RequestBuilder("uses/" + urlName + "/items");
+        final RequestBuilder builder = new RequestBuilder("users/" + urlName + "/items", true, null);
 
         new AsyncTask<Void, Void, List<Item>>() {
             @Override
-            protected List<Item> doInBackground(Void... voids) {
+            protected List<Item> doInBackground(@Nullable Void... voids) {
                 try {
                     String entity = executeRequest(builder.buildGet());
                     return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
@@ -388,7 +439,7 @@ public class Backend {
                 }
             }
             @Override
-            protected void onPostExecute(List<Item> items) {
+            protected void onPostExecute(@Nullable List<Item> items) {
                 if (items != null) {
                     callback.onSuccess(items);
                 }
@@ -399,11 +450,11 @@ public class Backend {
     //特定タグの投稿取得
     //GET /api/v1/tags/:url_name/userItems
     public void tagItems(String tag, final ItemsCallback callback) {
-        final RequestBuilder builder = new RequestBuilder("uses/" + tag + "/items");
+        final RequestBuilder builder = new RequestBuilder("tags/" + tag + "/items", true, null);
 
         new AsyncTask<Void, Void, List<Item>>() {
             @Override
-            protected List<Item> doInBackground(Void... voids) {
+            protected List<Item> doInBackground(@Nullable Void... voids) {
                 try {
                     String entity = executeRequest(builder.buildGet());
                     return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
@@ -413,7 +464,34 @@ public class Backend {
                 }
             }
             @Override
-            protected void onPostExecute(List<Item> items) {
+            protected void onPostExecute(@Nullable List<Item> items) {
+                if (items != null) {
+                    callback.onSuccess(items);
+                }
+            }
+        }.execute();
+    }
+
+    //  検索結果取得
+    //  GET /api/v1/search
+    public void search(String query, final ItemsCallback callback) {
+        Map<String, String> params = new HashMap<>();
+        params.put("q", query);
+        final RequestBuilder builder = new RequestBuilder("search", true, params);
+
+        new AsyncTask<Void, Void, List<Item>>() {
+            @Override
+            protected List<Item> doInBackground(@Nullable Void... voids) {
+                try {
+                    String entity = executeRequest(builder.buildGet());
+                    return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
+                } catch (Exception e) {
+                    builder.handleException(callback, e);
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(@Nullable List<Item> items) {
                 if (items != null) {
                     callback.onSuccess(items);
                 }

@@ -12,18 +12,18 @@ import java.util.List;
  * Created by kazhida on 2014/07/29.
  */
 public class Tag {
-    @Getter @Expose
+    @Getter @Expose @SuppressWarnings("unused")
     private String name;
-    @Getter @Expose @SerializedName("url_name")
+    @Getter @Expose @SerializedName("url_name") @SuppressWarnings("unused")
     private String urlName;
-    @Getter @Expose @SerializedName("icon_url")
+    @Getter @Expose @SerializedName("icon_url") @SuppressWarnings("unused")
     private String iconUrl;
-    @Getter @Expose @SerializedName("item_count")
+    @Getter @Expose @SerializedName("item_count") @SuppressWarnings("unused")
     private Integer itemCount;
-    @Getter @Expose @SerializedName("follower_count")
+    @Getter @Expose @SerializedName("follower_count") @SuppressWarnings("unused")
     private Integer followerCount;
-    @Getter @Expose
+    @Getter @Expose @SuppressWarnings("unused")
     private Boolean following;
-    @Getter @Expose
+    @Getter @Expose @SuppressWarnings("unused")
     private List<String> versions;
 }

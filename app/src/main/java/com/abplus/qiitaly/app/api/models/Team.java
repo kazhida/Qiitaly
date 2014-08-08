@@ -11,8 +11,8 @@ import lombok.Getter;
  * Created by kazhida on 2014/07/29.
  */
 public class Team {
-    @Getter @Expose
+    @Getter @Expose @SuppressWarnings("unused")
     private String name;
-    @Getter @Expose @SerializedName("url_name")
+    @Getter @Expose @SerializedName("url_name") @SuppressWarnings("unused")
     private String urlName;
 }

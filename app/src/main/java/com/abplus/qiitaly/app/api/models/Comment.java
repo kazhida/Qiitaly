@@ -9,12 +9,12 @@ import lombok.Getter;
  * Created by kazhida on 2014/07/30.
  */
 public class Comment {
-    @Getter @Expose
+    @Getter @Expose @SuppressWarnings("unused")
     private Integer id;
-    @Getter @Expose
+    @Getter @Expose @SuppressWarnings("unused")
     private String uuid;
-    @Getter @Expose
+    @Getter @Expose @SuppressWarnings("unused")
     private User user;
-    @Getter @Expose
+    @Getter @Expose @SuppressWarnings("unused")
     private String body;
 }

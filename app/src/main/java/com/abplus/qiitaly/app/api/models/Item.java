@@ -35,7 +35,7 @@ public class Item {
     @Getter @Expose @SerializedName("stock_count") @SuppressWarnings("unused")
     private Integer stockCount;
     @Getter @Expose @SerializedName("stock_users") @SuppressWarnings("unused")
-    private List<User> stockUsers;
+    private List<String> stockUsers;
     @Getter @Expose @SerializedName("comment_count") @SuppressWarnings("unused")
     private Integer commentCount;
     @Getter @Expose @SuppressWarnings("unused")

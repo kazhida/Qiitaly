@@ -1,10 +1,14 @@
 package com.abplus.qiitaly.app;
 
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -13,16 +17,16 @@ import android.support.v4.widget.DrawerLayout;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
+import com.abplus.qiitaly.app.api.models.Tag;
 import com.abplus.qiitaly.app.api.models.User;
 import com.abplus.qiitaly.app.utils.Dialogs;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.viewpagerindicator.TitlePageIndicator;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +38,8 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
     ViewPager pager;
     @InjectView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
+
+    private static final String CURRENT_SCREEN = "CURRENT_SCREEN";
 
     private enum Screen {
         Home,
@@ -73,31 +79,21 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
         if (! Backend.sharedInstance().isLoggedIn()) {
             startActivity(new Intent(this, LoginActivity.class));
-        } else if (Backend.sharedInstance().getCurrent() != null) {
-            setupPages();
+        } else if (Backend.sharedInstance().getCurrent() == null) {
+            setupCurrentUser();
         } else {
-            final ProgressDialog dialog = Dialogs.startLoading(this);
-            Backend.sharedInstance().user(new Backend.UserCallback() {
-                @Override
-                public void onSuccess(User user) {
-                    dialog.dismiss();
-                    setupPages();
-                }
-
-                @Override
-                public void onException(Throwable throwable) {
-                    throwable.printStackTrace();
-                    dialog.dismiss();
-                    Dialogs.errorMessage(MainActivity.this, R.string.err_login, throwable.getLocalizedMessage());
-                }
-
-                @Override
-                public void onError(String errorReason) {
-                    dialog.dismiss();
-                    Dialogs.errorMessage(MainActivity.this, R.string.err_login, errorReason);
-                }
-            });
+            setupPages();
         }
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.putInt(CURRENT_SCREEN, currentScreen.ordinal());
+        editor.commit();
     }
 
 
@@ -107,7 +103,83 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
     }
 
     private void setupPages() {
-        adapter.resetForHome();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        currentScreen = Screen.values()[preferences.getInt(CURRENT_SCREEN, 0)];
+
+        switch (currentScreen) {
+            case Users:
+                adapter.resetForUsers();
+                break;
+            case Tags:
+                adapter.resetForTags();
+                break;
+            default:
+                adapter.resetForHome();
+                break;
+        }
+    }
+
+    private void setupCurrentUser() {
+        final ProgressDialog dialog = Dialogs.startLoading(this);
+        Backend.sharedInstance().user(new Backend.UserCallback() {
+            @Override
+            public void onSuccess(final User user) {
+                Backend.sharedInstance().usersFollowingUsers(user.getUrlName(), new Backend.UsersCallback() {
+                    @Override
+                    public void onSuccess(List<User> users) {
+                        user.addFollowingUsers(users);
+
+                        Backend.sharedInstance().usersFollowingTags(user.getUrlName(), new Backend.TagsCallback() {
+                            @Override
+                            public void onSuccess(List<Tag> tags) {
+                                user.addFollowingTags(tags);
+                                dialog.dismiss();
+                                setupPages();
+                            }
+
+                            @Override
+                            public void onException(Throwable throwable) {
+                                throwable.printStackTrace();
+                                dialog.dismiss();
+                                Dialogs.errorMessage(MainActivity.this, R.string.err_login, throwable.getLocalizedMessage());
+                            }
+
+                            @Override
+                            public void onError(String errorReason) {
+                                dialog.dismiss();
+                                Dialogs.errorMessage(MainActivity.this, R.string.err_login, errorReason);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onException(Throwable throwable) {
+                        throwable.printStackTrace();
+                        dialog.dismiss();
+                        Dialogs.errorMessage(MainActivity.this, R.string.err_login, throwable.getLocalizedMessage());
+                    }
+
+                    @Override
+                    public void onError(String errorReason) {
+                        dialog.dismiss();
+                        Dialogs.errorMessage(MainActivity.this, R.string.err_login, errorReason);
+                    }
+                });
+            }
+
+            @Override
+            public void onException(Throwable throwable) {
+                throwable.printStackTrace();
+                dialog.dismiss();
+                Dialogs.errorMessage(MainActivity.this, R.string.err_login, throwable.getLocalizedMessage());
+            }
+
+            @Override
+            public void onError(String errorReason) {
+                dialog.dismiss();
+                Dialogs.errorMessage(MainActivity.this, R.string.err_login, errorReason);
+            }
+        });
     }
 
     @Override
@@ -130,20 +202,20 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
     private class ListPagerAdapter extends FragmentPagerAdapter {
 
-        List<TopicListFragment> fragments = new ArrayList<TopicListFragment>();
+        List<TopicListFragment> fragments = new ArrayList<>();
 
         public ListPagerAdapter() {
             super(getSupportFragmentManager());
         }
 
         @Override
-        public Fragment getItem(int i) {
-            return fragments.get(i);
+        public Fragment getItem(int position) {
+            return fragments.get(position);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return fragments.get(position).getTitle();
+            return fragments.get(position).title;
         }
 
         @Override
@@ -152,49 +224,56 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         }
 
         void resetForHome() {
+            currentScreen = Screen.Home;
+            fragments.clear();
             fragments.add(new TopicListFragment().forWhatsNew(getString(R.string.home_whats_new)));
             fragments.add(new TopicListFragment().forStocks(getString(R.string.home_stocks)));
             fragments.add(new TopicListFragment().byUser(getString(R.string.home_self_topic), Backend.sharedInstance().getUrlName()));
             notifyDataSetChanged();
         }
+
+        @SuppressWarnings("unused")
+        void resetForUsers() {
+            currentScreen = Screen.Users;
+            fragments.clear();
+
+            for (User user: Backend.sharedInstance().getCurrent().getFollowings().getUsers()) {
+                fragments.add(new TopicListFragment().byUser(user.getName(), user.getUrlName()));
+            }
+
+            notifyDataSetChanged();
+        }
+
+        @SuppressWarnings("unused")
+        void resetForTags() {
+            currentScreen = Screen.Tags;
+            fragments.clear();
+
+            for (Tag tag: Backend.sharedInstance().getCurrent().getFollowings().getTags()) {
+                fragments.add(new TopicListFragment().byTag(tag.getName(), tag.getUrlName()));
+            }
+
+            notifyDataSetChanged();
+        }
     }
+
+    private static final int MEMORY_CACHE_SIZE = 8 * 1024 * 1024;
 
     private void initImageLoader() {
-        File cacheDir = StorageUtils.getCacheDirectory(this);
-
         DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .cacheOnDisc()
+                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .considerExifParams(true)
                 .build();
-
-        ImageLoader.getInstance().init(
-                new ImageLoaderConfiguration.Builder(this)
-                        .discCache(new UnlimitedDiscCache(cacheDir))
-                        .defaultDisplayImageOptions(options)
-                        .build()
-        );
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                .memoryCache(new LruMemoryCache(MEMORY_CACHE_SIZE))
+                .memoryCacheSize(MEMORY_CACHE_SIZE)
+                .diskCacheFileCount(200)
+                .taskExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+                .taskExecutorForCachedImages(AsyncTask.THREAD_POOL_EXECUTOR)
+                .defaultDisplayImageOptions(options)
+                .build();
+        ImageLoader.getInstance().init(config);
     }
-
-//    private class HomePagerAdapter extends ListPagerAdapter {
-//
-//        HomePagerAdapter() {
-//            super();
-//            fragments.add(new TopicListFragment().forWhatsNew());
-//            fragments.add(new TopicListFragment().forStocks());
-//            fragments.add(new TopicListFragment().byUser(Backend.sharedInstance().getUrlName()));
-//        }
-//
-//        @Override
-//        public CharSequence getPageTitle(int position) {
-//            switch (position) {
-//                case 0:
-//                    return getString(R.string.home_whats_new);
-//                case 1:
-//                    return getString(R.string.home_stocks);
-//                case 2:
-//                    return getString(R.string.home_self_topic);
-//                default:
-//                    return null;
-//            }
-//        }
-//    }
 }
