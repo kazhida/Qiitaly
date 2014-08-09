@@ -95,16 +95,16 @@ public class TopicListAdapter extends BaseAdapter {
         }
     }
 
-    private abstract class CommonItemsCallback implements Backend.ItemsCallback {
+    private abstract class CommonItemsCallback implements Backend.Callback<List<Item>> {
         @Override
         public void onException(Throwable throwable) {
             throwable.printStackTrace();
-            Dialogs.errorMessage(context, R.string.err_login, throwable.getLocalizedMessage());
+            Dialogs.errorMessage(context, R.string.err_response, throwable.getLocalizedMessage());
         }
 
         @Override
         public void onError(String errorReason) {
-            Dialogs.errorMessage(context, R.string.err_login, errorReason);
+            Dialogs.errorMessage(context, R.string.err_response, errorReason);
         }
     }
 

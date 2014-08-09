@@ -121,15 +121,15 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
     private void setupCurrentUser() {
         final ProgressDialog dialog = Dialogs.startLoading(this);
-        Backend.sharedInstance().user(new Backend.UserCallback() {
+        Backend.sharedInstance().user(new Backend.Callback<User>() {
             @Override
             public void onSuccess(final User user) {
-                Backend.sharedInstance().usersFollowingUsers(user.getUrlName(), new Backend.UsersCallback() {
+                Backend.sharedInstance().usersFollowingUsers(user.getUrlName(), new Backend.Callback<List<User>>() {
                     @Override
                     public void onSuccess(List<User> users) {
                         user.addFollowingUsers(users);
 
-                        Backend.sharedInstance().usersFollowingTags(user.getUrlName(), new Backend.TagsCallback() {
+                        Backend.sharedInstance().usersFollowingTags(user.getUrlName(), new Backend.Callback<List<Tag>>() {
                             @Override
                             public void onSuccess(List<Tag> tags) {
                                 user.addFollowingTags(tags);
@@ -141,13 +141,13 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
                             public void onException(Throwable throwable) {
                                 throwable.printStackTrace();
                                 dialog.dismiss();
-                                Dialogs.errorMessage(MainActivity.this, R.string.err_login, throwable.getLocalizedMessage());
+                                Dialogs.errorMessage(MainActivity.this, R.string.err_response, throwable.getLocalizedMessage());
                             }
 
                             @Override
                             public void onError(String errorReason) {
                                 dialog.dismiss();
-                                Dialogs.errorMessage(MainActivity.this, R.string.err_login, errorReason);
+                                Dialogs.errorMessage(MainActivity.this, R.string.err_response, errorReason);
                             }
                         });
                     }
@@ -156,13 +156,13 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
                     public void onException(Throwable throwable) {
                         throwable.printStackTrace();
                         dialog.dismiss();
-                        Dialogs.errorMessage(MainActivity.this, R.string.err_login, throwable.getLocalizedMessage());
+                        Dialogs.errorMessage(MainActivity.this, R.string.err_response, throwable.getLocalizedMessage());
                     }
 
                     @Override
                     public void onError(String errorReason) {
                         dialog.dismiss();
-                        Dialogs.errorMessage(MainActivity.this, R.string.err_login, errorReason);
+                        Dialogs.errorMessage(MainActivity.this, R.string.err_response, errorReason);
                     }
                 });
             }
@@ -171,13 +171,13 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
             public void onException(Throwable throwable) {
                 throwable.printStackTrace();
                 dialog.dismiss();
-                Dialogs.errorMessage(MainActivity.this, R.string.err_login, throwable.getLocalizedMessage());
+                Dialogs.errorMessage(MainActivity.this, R.string.err_response, throwable.getLocalizedMessage());
             }
 
             @Override
             public void onError(String errorReason) {
                 dialog.dismiss();
-                Dialogs.errorMessage(MainActivity.this, R.string.err_login, errorReason);
+                Dialogs.errorMessage(MainActivity.this, R.string.err_response, errorReason);
             }
         });
     }

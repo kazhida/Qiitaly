@@ -23,6 +23,7 @@
     <string name="home_self_topic">自分の投稿</string>
 
     <string name="err_login">ログイン失敗</string>
+    <string name="err_response">通信失敗</string>
     <string name="err_empty_user_name">ユーザ名を入力してください。</string>
     <string name="err_empty_password">パスワードを入力してください。</string>
 

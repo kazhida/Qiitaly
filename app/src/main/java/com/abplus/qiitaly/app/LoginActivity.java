@@ -11,6 +11,7 @@ import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
 import com.abplus.qiitaly.app.api.models.Auth;
 import com.abplus.qiitaly.app.utils.Dialogs;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * ログイン用アクティビティ
@@ -35,7 +36,7 @@ public class LoginActivity extends Activity {
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(@NotNull View view) {
                 login();
             }
         });
@@ -67,7 +68,7 @@ public class LoginActivity extends Activity {
         if (userName != null && password != null) {
             final ProgressDialog dialog = Dialogs.startLoading(LoginActivity.this);
 
-            Backend.sharedInstance().auth(this, userName, password, new Backend.AuthCallback() {
+            Backend.sharedInstance().auth(this, userName, password, new Backend.Callback<Auth>() {
                 @Override
                 public void onSuccess(Auth auth) {
                     dialog.dismiss();
