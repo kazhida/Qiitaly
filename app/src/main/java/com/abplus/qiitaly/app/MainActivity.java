@@ -3,6 +3,7 @@ package com.abplus.qiitaly.app;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,9 +12,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.*;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
@@ -26,6 +29,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.viewpagerindicator.TitlePageIndicator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -200,45 +204,61 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         return super.onOptionsItemSelected(item);
     }
 
+    private Activity getActivity() {
+        return this;
+    }
+
+    private static final String POSITION = "POSITION";
+
     private class ListPagerAdapter extends FragmentPagerAdapter {
 
-        List<TopicListFragment> fragments = new ArrayList<>();
+        List<TopicListAdapter> adapters = new ArrayList<>();
 
         public ListPagerAdapter() {
             super(getSupportFragmentManager());
         }
 
+        public TopicListAdapter getAdapter(int position) {
+            return adapters.get(position);
+        }
+
         @Override
         public Fragment getItem(int position) {
-            return fragments.get(position);
+            TopicListFragment fragment = new TopicListFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putInt(POSITION, position);
+            fragment.setArguments(bundle);
+
+            return fragment;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return fragments.get(position).title;
+            return adapters.get(position).title;
         }
 
         @Override
         public int getCount() {
-            return fragments.size();
+            return adapters.size();
         }
 
         void resetForHome() {
             currentScreen = Screen.Home;
-            fragments.clear();
-            fragments.add(new TopicListFragment().forWhatsNew(getString(R.string.home_whats_new)));
-            fragments.add(new TopicListFragment().forStocks(getString(R.string.home_stocks)));
-            fragments.add(new TopicListFragment().byUser(getString(R.string.home_self_topic), Backend.sharedInstance().getUrlName()));
+            adapters.clear();
+            adapters.add(new TopicListAdapter.ForWhatsNew(getActivity()));
+            adapters.add(new TopicListAdapter.ForStocks(getActivity()));
+            adapters.add(new TopicListAdapter.ForContributes(getActivity()));
             notifyDataSetChanged();
         }
 
         @SuppressWarnings("unused")
         void resetForUsers() {
             currentScreen = Screen.Users;
-            fragments.clear();
+            adapters.clear();
 
             for (User user: Backend.sharedInstance().getCurrent().getFollowings().getUsers()) {
-                fragments.add(new TopicListFragment().byUser(user.getName(), user.getUrlName()));
+                adapters.add(new TopicListAdapter.ByUser(getActivity(), user));
             }
 
             notifyDataSetChanged();
@@ -247,13 +267,49 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         @SuppressWarnings("unused")
         void resetForTags() {
             currentScreen = Screen.Tags;
-            fragments.clear();
+            adapters.clear();
 
             for (Tag tag: Backend.sharedInstance().getCurrent().getFollowings().getTags()) {
-                fragments.add(new TopicListFragment().byTag(tag.getName(), tag.getUrlName()));
+                adapters.add(new TopicListAdapter.ByTag(getActivity(), tag));
             }
 
             notifyDataSetChanged();
+        }
+    }
+
+    @SuppressLint("ValidFragment")
+    public class TopicListFragment extends Fragment {
+        @InjectView(R.id.swipe_layout)
+        SwipeRefreshLayout swipeLayout;
+        @InjectView(R.id.list_view)
+        ListView listView;
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_topic_list, container, false);
+            ButterKnife.inject(this, view);
+            return view;
+        }
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            listView.setAdapter(adapter.getAdapter(getArguments().getInt(POSITION)));
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(@NotNull AdapterView<?> adapterView, @NotNull View view, int i, long l) {
+                    //todo: 詳細表示
+                }
+            });
+
+            swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    //todo: 新規読み込み
+                }
+            });
         }
     }
 

@@ -12,6 +12,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
 import com.abplus.qiitaly.app.api.models.Item;
+import com.abplus.qiitaly.app.api.models.Tag;
+import com.abplus.qiitaly.app.api.models.User;
 import com.abplus.qiitaly.app.utils.Dialogs;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +32,7 @@ public class TopicListAdapter extends BaseAdapter {
     protected List<Item> topics = new ArrayList<>();
     protected LayoutInflater inflater;
     protected Context context;
+    protected String title;
 
     TopicListAdapter(Activity activity) {
         super();
@@ -64,9 +67,14 @@ public class TopicListAdapter extends BaseAdapter {
 
         Item item = topics.get(position);
 
-        holder.descriptionText.setText(item.getUser().getName());
         holder.titleText.setText(item.getTitle());
-        holder.stockCount.setText("" + item.getStockCount());
+        holder.stockCount.setText(context.getString(R.string.stoked, item.getStockCount()));
+
+        if (item.getUpdatedAt().compareTo(item.getCreatedAt()) > 0) {
+            holder.descriptionText.setText(updatedDescription(item));
+        } else {
+            holder.descriptionText.setText(postedDescription(item));
+        }
 
         ImageLoader.getInstance().displayImage(item.getUser().getProfileImageUrl(), holder.iconImage);
 
@@ -78,6 +86,14 @@ public class TopicListAdapter extends BaseAdapter {
         topics.clear();
         topics.addAll(items);
         notifyDataSetChanged();
+    }
+
+    private String updatedDescription(Item item) {
+        return context.getString(R.string.updated, item.getUser().getUrlName(), item.getUpdatedAtInWords());
+    }
+
+    private String postedDescription(Item item) {
+        return context.getString(R.string.posted, item.getUser().getUrlName(), item.getCreatedAtInWords());
     }
 
     protected class ViewHolder {
@@ -113,7 +129,25 @@ public class TopicListAdapter extends BaseAdapter {
         ForWhatsNew(Activity activity) {
             super(activity);
 
+            title = activity.getString(R.string.home_whats_new);
+
             Backend.sharedInstance().items(false, new CommonItemsCallback() {
+                @Override
+                public void onSuccess(List<Item> items) {
+                    initItems(items);
+                }
+            });
+        }
+    }
+
+    public static class ForContributes extends TopicListAdapter {
+
+        ForContributes(Activity activity) {
+            super(activity);
+
+            title = activity.getString(R.string.home_self_topic);
+
+            Backend.sharedInstance().items(true, new CommonItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
@@ -127,6 +161,8 @@ public class TopicListAdapter extends BaseAdapter {
         ForStocks(Activity activity) {
             super(activity);
 
+            title = activity.getString(R.string.home_stocks);
+
             Backend.sharedInstance().stocks(new CommonItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
@@ -138,10 +174,12 @@ public class TopicListAdapter extends BaseAdapter {
 
     public static class ByUser extends TopicListAdapter {
 
-        ByUser(Activity activity, String urlName) {
+        ByUser(Activity activity, User user) {
             super(activity);
 
-            Backend.sharedInstance().userItems(urlName, new CommonItemsCallback() {
+            title = user.getName();
+
+            Backend.sharedInstance().userItems(user.getUrlName(), new CommonItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
@@ -152,10 +190,12 @@ public class TopicListAdapter extends BaseAdapter {
 
     public static class ByTag extends TopicListAdapter {
 
-        ByTag(Activity activity, String tag) {
+        ByTag(Activity activity, Tag tag) {
             super(activity);
 
-            Backend.sharedInstance().tagItems(tag, new CommonItemsCallback() {
+            title = tag.getName();
+
+            Backend.sharedInstance().tagItems(tag.getUrlName(), new CommonItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
@@ -163,18 +203,20 @@ public class TopicListAdapter extends BaseAdapter {
             });
         }
     }
-
-    public static class BySearch extends TopicListAdapter {
-
-        BySearch(Activity activity, String query) {
-            super(activity);
-
-            Backend.sharedInstance().search(query, new CommonItemsCallback() {
-                @Override
-                public void onSuccess(List<Item> items) {
-                    initItems(items);
-                }
-            });
-        }
-    }
+//
+//    public static class BySearch extends TopicListAdapter {
+//
+//        BySearch(Activity activity, String query) {
+//            super(activity);
+//
+//            title = query;
+//
+//            Backend.sharedInstance().search(query, new CommonItemsCallback() {
+//                @Override
+//                public void onSuccess(List<Item> items) {
+//                    initItems(items);
+//                }
+//            });
+//        }
+//    }
 }
