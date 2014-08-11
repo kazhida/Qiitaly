@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Qiitaly</string>
+    <string name="app_name">きぃたり</string>
     <string name="title_section1">ホーム</string>
     <string name="title_section2">フォローしているユーザ</string>
     <string name="title_section3">フォローしているタグ</string>

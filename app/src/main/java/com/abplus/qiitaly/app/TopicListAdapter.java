@@ -258,20 +258,29 @@ public class TopicListAdapter extends BaseAdapter {
             });
         }
     }
-//
-//    public static class BySearch extends TopicListAdapter {
-//
-//        BySearch(Activity activity, String query) {
-//            super(activity);
-//
-//            title = query;
-//
-//            Backend.sharedInstance().search(query, new CommonItemsCallback() {
-//                @Override
-//                public void onSuccess(List<Item> items) {
-//                    initItems(items);
-//                }
-//            });
-//        }
-//    }
+
+    public static class BySearch extends TopicListAdapter {
+
+        private String query;
+
+        BySearch(Activity activity, String query) {
+            super(activity);
+            title = query;
+            this.query = query;
+            load(null);
+        }
+
+        @Override
+        protected void load(final Runnable runnable) {
+            Backend.sharedInstance().search(query, new ItemsCallback() {
+                @Override
+                public void onSuccess(List<Item> items) {
+                    initItems(items);
+                    if (runnable != null) {
+                        runnable.run();
+                    }
+                }
+            });
+        }
+    }
 }
