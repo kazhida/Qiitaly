@@ -45,6 +45,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
     View fragmentContainer;
 
     private static final String CURRENT_SCREEN = "CURRENT_SCREEN";
+    private static final int LOGIN_REQUEST_CODE = 15449;    //  適当
 
     private enum Screen {
         Home,
@@ -100,7 +101,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         super.onResume();
 
         if (! Backend.sharedInstance().isLoggedIn()) {
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivityForResult(new Intent(this, LoginActivity.class), LOGIN_REQUEST_CODE, null);
         } else if (Backend.sharedInstance().getCurrent() == null) {
             setupCurrentUser();
         } else {
@@ -118,6 +119,14 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         editor.commit();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LOGIN_REQUEST_CODE && resultCode == Activity.RESULT_CANCELED) {
+            finish();
+        }
+    }
 
     @Override
     public void onItemSelected(int position) {
@@ -149,7 +158,8 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
     @Override
     public void onLogout() {
-        //todo logout
+        Backend.sharedInstance().logout(this);
+        startActivityForResult(new Intent(this, LoginActivity.class), LOGIN_REQUEST_CODE, null);
     }
 
     @Override

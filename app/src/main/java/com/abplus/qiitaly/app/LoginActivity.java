@@ -33,6 +33,7 @@ public class LoginActivity extends Activity {
         ButterKnife.inject(this);
 
         setTitle(R.string.login);
+        setResult(Activity.RESULT_CANCELED);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +73,7 @@ public class LoginActivity extends Activity {
                 @Override
                 public void onSuccess(Auth auth) {
                     dialog.dismiss();
+                    setResult(Activity.RESULT_OK);
                     finish();
                 }
 

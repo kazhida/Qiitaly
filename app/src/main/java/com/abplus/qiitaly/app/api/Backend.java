@@ -80,7 +80,6 @@ public class Backend {
         return auth != null && auth.getToken() != null && auth.getUrlName() != null;
     }
 
-    @SuppressWarnings("unused")
     public void logout(Context context) {
         auth = null;
         storeAuth(context);
