@@ -2,18 +2,20 @@ package com.abplus.qiitaly.app;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.webkit.WebView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
 import com.abplus.qiitaly.app.api.models.Item;
 import com.abplus.qiitaly.app.utils.Dialogs;
+import com.abplus.qiitaly.app.utils.HtmlBuilder;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -46,8 +48,8 @@ public class TopicActivity extends Activity {
     }
 
     public static class TopicFragment extends Fragment {
-        @InjectView(R.id.content_text)
-        TextView contentText;
+        @InjectView(R.id.web_view)
+        WebView webView;
 
         static TopicFragment newInstance(@NotNull String uuid) {
             TopicFragment fragment = new TopicFragment();
@@ -71,21 +73,26 @@ public class TopicActivity extends Activity {
             super.onActivityCreated(savedInstanceState);
 
             final Context context = getActivity();
+            final ProgressDialog dialog = Dialogs.startLoading(context);
 
             Backend.sharedInstance().item(getArguments().getString(UUID), new Backend.Callback<Item>() {
                 @Override
                 public void onSuccess(Item result) {
-                    contentText.setText(result.getBody());
+                    dialog.dismiss();
+                    HtmlBuilder builder = new HtmlBuilder(result);
+                    webView.loadDataWithBaseURL(null, builder.build(), "text/html", "UTF-8", null);
                 }
 
                 @Override
                 public void onException(Throwable throwable) {
+                    dialog.dismiss();
                     throwable.printStackTrace();
                     Dialogs.errorMessage(context, R.string.err_response, throwable.getLocalizedMessage());
                 }
 
                 @Override
                 public void onError(String errorReason) {
+                    dialog.dismiss();
                     Dialogs.errorMessage(context, R.string.err_response, errorReason);
                 }
             });
