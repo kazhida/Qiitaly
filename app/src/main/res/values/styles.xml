@@ -2,23 +2,22 @@
 
     <style name="AppTheme" parent="android:Theme.Holo.Light">
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>
-        <item name="vpiTabPageIndicatorStyle">@style/CustomTitlePageIndicator</item>
+        <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>
     </style>
 
     <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">@color/bg_actionbar</item>
     </style>
 
-    <style name="CustomTitlePageIndicator" parent="Widget.TabPageIndicator">
+    <style name="CustomTitlePageIndicator">
         <item name="android:background">@color/bg_indicator</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.TabPageIndicator</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/off_black</item>
-        <item name="android:fadingEdge">horizontal</item>
-        <item name="android:fadingEdgeLength">8dp</item>
-        <item name="android:layout_width">wrap_content</item>
+        <item name="footerColor">@color/qiita_green</item>
+        <item name="footerLineHeight">1dp</item>
+        <item name="footerIndicatorHeight">3dp</item>
+        <item name="footerIndicatorStyle">underline</item>
+        <item name="android:textColor">#99333333</item>
+        <item name="selectedColor">#333333</item>
+        <item name="selectedBold">true</item>
     </style>
 
     <style name="CaptionLabel">
@@ -40,5 +39,15 @@
     <style name="ItemTitle">
         <item name="android:textSize">8pt</item>
         <item name="android:textColor">#333333</item>
+    </style>
+
+    <style name="TagCaption">
+        <item name="android:textSize">6pt</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:background">@drawable/bg_tag</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">2dp</item>
+        <item name="android:paddingBottom">0dp</item>
     </style>
 </resources>

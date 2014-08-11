@@ -1,50 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="8dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="0dp"
         >
-    <ImageView
-            android:id="@+id/icon_image"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_launcher"
-            android:contentDescription="@string/icon"/>
 
     <LinearLayout
             android:orientation="vertical"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginLeft="4dp"
-            >
-        <TextView
-                style="@style/ItemDescription"
-                android:id="@+id/description_text"
-                android:layout_width="wrap_content"
+            android:background="@drawable/bg_topic_item"
+            tools:ignore="UselessParent">
+        <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/dummy_description"
-                />
-        <TextView
-                style="@style/ItemTitle"
-                android:id="@+id/title_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_title"
-                />
-    </LinearLayout>
+                android:padding="4dp"
+                >
 
-    <TextView
-            style="@style/ItemDescription"
-            android:id="@+id/stock_count_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dummy_count"
-            />
-</LinearLayout>
+            <TextView
+                    style="@style/ItemDescription"
+                    android:id="@+id/description_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:text="@string/dummy_description"
+                    />
+
+            <TextView
+                    style="@style/ItemDescription"
+                    android:id="@+id/stock_count_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="@string/dummy_count"
+                    />
+        </RelativeLayout>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <ImageView
+                    android:id="@+id/icon_image"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/ic_launcher"
+                    android:contentDescription="@string/icon"/>
+
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    >
+
+                <TextView
+                        style="@style/ItemTitle"
+                        android:id="@+id/title_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dummy_title"
+                        />
+                <com.wefika.flowlayout.FlowLayout
+                        android:id="@+id/tag_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

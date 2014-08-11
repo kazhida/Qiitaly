@@ -46,13 +46,13 @@ public class Backend {
     @Getter
     private User current;
 
-    public String getUrlName() {
-        if (auth == null)  {
-            return null;
-        } else {
-            return auth.getUrlName();
-        }
-    }
+//    public String getUrlName() {
+//        if (auth == null)  {
+//            return null;
+//        } else {
+//            return auth.getUrlName();
+//        }
+//    }
 
     public void restoreAuth(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -112,7 +112,7 @@ public class Backend {
         executor.post(callback, new PostProcess<Auth>() {
             @Override
             public void onPostProcess(Auth result) {
-                setAuth(auth);
+                setAuth(result);
                 storeAuth(context);
             }
         });

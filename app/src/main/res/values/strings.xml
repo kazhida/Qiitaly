@@ -34,4 +34,5 @@
     <string name="dummy_description">Description</string>
     <string name="dummy_title">Title</string>
     <string name="dummy_count">0</string>
+    <string name="dummy_tag">Tag</string>
 </resources>

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -125,63 +126,26 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
     private void setupCurrentUser() {
         final ProgressDialog dialog = Dialogs.startLoading(this);
-        Backend.sharedInstance().user(new Backend.Callback<User>() {
+
+        Backend.sharedInstance().user(new ApiCallback<User>(getActivity(), dialog) {
             @Override
             public void onSuccess(final User user) {
-                Backend.sharedInstance().usersFollowingUsers(user.getUrlName(), new Backend.Callback<List<User>>() {
+                Backend.sharedInstance().usersFollowingUsers(user.getUrlName(), new ApiCallback<List<User>>(getActivity(), dialog) {
                     @Override
                     public void onSuccess(List<User> users) {
                         user.addFollowingUsers(users);
 
-                        Backend.sharedInstance().usersFollowingTags(user.getUrlName(), new Backend.Callback<List<Tag>>() {
+                        Backend.sharedInstance().usersFollowingTags(user.getUrlName(), new ApiCallback<List<Tag>>(getActivity(), dialog) {
                             @Override
                             public void onSuccess(List<Tag> tags) {
                                 user.addFollowingTags(tags);
+
                                 dialog.dismiss();
                                 setupPages();
                             }
-
-                            @Override
-                            public void onException(Throwable throwable) {
-                                throwable.printStackTrace();
-                                dialog.dismiss();
-                                Dialogs.errorMessage(MainActivity.this, R.string.err_response, throwable.getLocalizedMessage());
-                            }
-
-                            @Override
-                            public void onError(String errorReason) {
-                                dialog.dismiss();
-                                Dialogs.errorMessage(MainActivity.this, R.string.err_response, errorReason);
-                            }
                         });
                     }
-
-                    @Override
-                    public void onException(Throwable throwable) {
-                        throwable.printStackTrace();
-                        dialog.dismiss();
-                        Dialogs.errorMessage(MainActivity.this, R.string.err_response, throwable.getLocalizedMessage());
-                    }
-
-                    @Override
-                    public void onError(String errorReason) {
-                        dialog.dismiss();
-                        Dialogs.errorMessage(MainActivity.this, R.string.err_response, errorReason);
-                    }
                 });
-            }
-
-            @Override
-            public void onException(Throwable throwable) {
-                throwable.printStackTrace();
-                dialog.dismiss();
-                Dialogs.errorMessage(MainActivity.this, R.string.err_response, throwable.getLocalizedMessage());
-            }
-
-            @Override
-            public void onError(String errorReason) {
-                dialog.dismiss();
-                Dialogs.errorMessage(MainActivity.this, R.string.err_response, errorReason);
             }
         });
     }
@@ -209,6 +173,30 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
     }
 
     private static final String POSITION = "POSITION";
+
+    private static abstract class ApiCallback<T> implements Backend.Callback<T> {
+
+        private ProgressDialog dialog;
+        private Context context;
+
+        ApiCallback(Context context, ProgressDialog dialog) {
+            this.dialog = dialog;
+            this.context = context;
+        }
+
+        @Override
+        public void onException(Throwable throwable) {
+            throwable.printStackTrace();
+            dialog.dismiss();
+            Dialogs.errorMessage(context, R.string.err_response, throwable.getLocalizedMessage());
+        }
+
+        @Override
+        public void onError(String errorReason) {
+            dialog.dismiss();
+            Dialogs.errorMessage(context, R.string.err_response, errorReason);
+        }
+    }
 
     private class ListPagerAdapter extends FragmentPagerAdapter {
 

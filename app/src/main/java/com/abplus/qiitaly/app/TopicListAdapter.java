@@ -76,6 +76,10 @@ public class TopicListAdapter extends BaseAdapter {
             holder.descriptionText.setText(postedDescription(item));
         }
 
+        for (Tag tag: item.getTags()) {
+            addTag(holder.tagLayout, tag);
+        }
+
         ImageLoader.getInstance().displayImage(item.getUser().getProfileImageUrl(), holder.iconImage);
 
         return view;
@@ -96,6 +100,12 @@ public class TopicListAdapter extends BaseAdapter {
         return context.getString(R.string.posted, item.getUser().getUrlName(), item.getCreatedAtInWords());
     }
 
+    private void addTag(ViewGroup layout, Tag tag) {
+        TextView textView = (TextView) inflater.inflate(R.layout.tag_text, layout, false);
+        textView.setText(tag.getName());
+        layout.addView(textView);
+    }
+
     protected class ViewHolder {
         @InjectView(R.id.icon_image)
         ImageView iconImage;
@@ -105,6 +115,8 @@ public class TopicListAdapter extends BaseAdapter {
         TextView titleText;
         @InjectView(R.id.stock_count_text)
         TextView stockCount;
+        @InjectView(R.id.tag_layout)
+        ViewGroup tagLayout;
 
         ViewHolder(View view) {
             ButterKnife.inject(this, view);
