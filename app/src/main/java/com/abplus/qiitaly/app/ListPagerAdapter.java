@@ -15,6 +15,7 @@ import android.widget.ListView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
+import com.abplus.qiitaly.app.api.models.Item;
 import com.abplus.qiitaly.app.api.models.Tag;
 import com.abplus.qiitaly.app.api.models.User;
 import org.jetbrains.annotations.NotNull;
@@ -120,7 +121,9 @@ public class ListPagerAdapter extends FragmentPagerAdapter {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(@NotNull AdapterView<?> adapterView, @NotNull View view, int i, long l) {
-                    //todo: 詳細表示
+                    Activity activity = getActivity();
+                    Item item = (Item) topicListAdapter.getItem(i);
+                    activity.startActivity(TopicActivity.startIntent(activity, item));
                 }
             });
 

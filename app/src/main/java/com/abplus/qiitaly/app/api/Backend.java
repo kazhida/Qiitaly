@@ -43,7 +43,7 @@ public class Backend {
     }
 
     private Auth auth;
-    @Getter
+    @Getter @SuppressWarnings("unused")
     private User current;
 
 //    public String getUrlName() {
@@ -165,6 +165,18 @@ public class Backend {
             @Override
             public List<Item> fromEntity(@NotNull String entity) {
                 return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
+            }
+        });
+        executor.get(callback);
+    }
+
+    //  特定の投稿取得
+    //  GET /api/v1/items/:uuid
+    public void item(@NotNull String uuid, @NotNull final Callback<Item> callback) {
+        Executor<Item> executor = new Executor<>("items/" + uuid, auth, new EntityEvaluator<Item>() {
+            @Override
+            public Item fromEntity(@NotNull String entity) {
+                return new Gson().fromJson(entity, Item.class);
             }
         });
         executor.get(callback);
