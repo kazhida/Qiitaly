@@ -8,16 +8,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.*;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.*;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
@@ -32,17 +31,18 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends FragmentActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends FragmentActivity implements NavigationDrawerFragment.Callback {
     @InjectView(R.id.indicator)
     TitlePageIndicator indicator;
     @InjectView(R.id.pager)
     ViewPager pager;
     @InjectView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
+    @InjectView(R.id.navigation_drawer)
+    View fragmentContainer;
 
     private static final String CURRENT_SCREEN = "CURRENT_SCREEN";
 
@@ -54,7 +54,8 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
     private NavigationDrawerFragment drawer;
     private Screen currentScreen = Screen.Home;
-    private ListPagerAdapter adapter;
+    private ListPagerAdapter[] adapters = new ListPagerAdapter[Screen.values().length];
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +66,28 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         ActionBar actionBar = getActionBar();
         assert actionBar != null;
         actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
 
         drawer = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        drawer.setUp(R.id.navigation_drawer, drawerLayout);
 
-        adapter = new ListPagerAdapter();
-        pager.setAdapter(adapter);
+        drawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                R.drawable.ic_drawer,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+        );
+        drawerLayout.setDrawerListener(drawerToggle);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        drawerLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                drawerToggle.syncState();
+            }
+        });
+
+        pager.setAdapter(new ListPagerAdapter(getSupportFragmentManager()));
         indicator.setViewPager(pager);
 
         Backend.sharedInstance().restoreAuth(this);
@@ -103,25 +120,47 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
+    public void onItemSelected(int position) {
+        currentScreen = Screen.values()[position];
+
+        switch (currentScreen) {
+            case Users:
+                currentScreen = Screen.Users;
+                if (adapters[currentScreen.ordinal()] == null) {
+                    adapters[currentScreen.ordinal()] = ListPagerAdapter.forUsers(this, getSupportFragmentManager());
+                }
+                break;
+            case Tags:
+                currentScreen = Screen.Tags;
+                if (adapters[currentScreen.ordinal()] == null) {
+                    adapters[currentScreen.ordinal()] = ListPagerAdapter.forTags(this, getSupportFragmentManager());
+                }
+                break;
+            default:
+                currentScreen = Screen.Home;
+                if (adapters[currentScreen.ordinal()] == null) {
+                    adapters[currentScreen.ordinal()] = ListPagerAdapter.forHome(this, getSupportFragmentManager());
+                }
+                break;
+        }
+        pager.setAdapter(adapters[currentScreen.ordinal()]);
+        drawerLayout.closeDrawer(fragmentContainer);
+    }
+
+    @Override
+    public void onLogout() {
+        //todo logout
+    }
+
+    @Override
+    public void onConfigurationChanged(@NotNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
     private void setupPages() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        currentScreen = Screen.values()[preferences.getInt(CURRENT_SCREEN, 0)];
-
-        switch (currentScreen) {
-            case Users:
-                adapter.resetForUsers();
-                break;
-            case Tags:
-                adapter.resetForTags();
-                break;
-            default:
-                adapter.resetForHome();
-                break;
-        }
+        drawer.selectItem(preferences.getInt(CURRENT_SCREEN, 0));
     }
 
     private void setupCurrentUser() {
@@ -152,27 +191,18 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!drawer.isDrawerOpen()) {
-            getMenuInflater().inflate(R.menu.main, menu);
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
     private Activity getActivity() {
         return this;
     }
-
-    private static final String POSITION = "POSITION";
 
     private static abstract class ApiCallback<T> implements Backend.Callback<T> {
 
@@ -195,109 +225,6 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         public void onError(String errorReason) {
             dialog.dismiss();
             Dialogs.errorMessage(context, R.string.err_response, errorReason);
-        }
-    }
-
-    private class ListPagerAdapter extends FragmentPagerAdapter {
-
-        List<TopicListAdapter> adapters = new ArrayList<>();
-
-        public ListPagerAdapter() {
-            super(getSupportFragmentManager());
-        }
-
-        public TopicListAdapter getAdapter(int position) {
-            return adapters.get(position);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            TopicListFragment fragment = new TopicListFragment();
-
-            Bundle bundle = new Bundle();
-            bundle.putInt(POSITION, position);
-            fragment.setArguments(bundle);
-
-            return fragment;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return adapters.get(position).title;
-        }
-
-        @Override
-        public int getCount() {
-            return adapters.size();
-        }
-
-        void resetForHome() {
-            currentScreen = Screen.Home;
-            adapters.clear();
-            adapters.add(new TopicListAdapter.ForWhatsNew(getActivity()));
-            adapters.add(new TopicListAdapter.ForStocks(getActivity()));
-            adapters.add(new TopicListAdapter.ForContributes(getActivity()));
-            notifyDataSetChanged();
-        }
-
-        @SuppressWarnings("unused")
-        void resetForUsers() {
-            currentScreen = Screen.Users;
-            adapters.clear();
-
-            for (User user: Backend.sharedInstance().getCurrent().getFollowings().getUsers()) {
-                adapters.add(new TopicListAdapter.ByUser(getActivity(), user));
-            }
-
-            notifyDataSetChanged();
-        }
-
-        @SuppressWarnings("unused")
-        void resetForTags() {
-            currentScreen = Screen.Tags;
-            adapters.clear();
-
-            for (Tag tag: Backend.sharedInstance().getCurrent().getFollowings().getTags()) {
-                adapters.add(new TopicListAdapter.ByTag(getActivity(), tag));
-            }
-
-            notifyDataSetChanged();
-        }
-    }
-
-    @SuppressLint("ValidFragment")
-    public class TopicListFragment extends Fragment {
-        @InjectView(R.id.swipe_layout)
-        SwipeRefreshLayout swipeLayout;
-        @InjectView(R.id.list_view)
-        ListView listView;
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_topic_list, container, false);
-            ButterKnife.inject(this, view);
-            return view;
-        }
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-
-            listView.setAdapter(adapter.getAdapter(getArguments().getInt(POSITION)));
-
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(@NotNull AdapterView<?> adapterView, @NotNull View view, int i, long l) {
-                    //todo: 詳細表示
-                }
-            });
-
-            swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    //todo: 新規読み込み
-                }
-            });
         }
     }
 

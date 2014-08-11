@@ -28,8 +28,7 @@ import java.util.List;
  */
 public class TopicListAdapter extends BaseAdapter {
 
-    protected List<Item> items;
-    protected List<Item> topics = new ArrayList<>();
+    protected List<Item> items = new ArrayList<>();
     protected LayoutInflater inflater;
     protected Context context;
     protected String title;
@@ -42,12 +41,12 @@ public class TopicListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return topics.size();
+        return items.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return topics.get(position);
+        return items.get(position);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class TopicListAdapter extends BaseAdapter {
         }
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        Item item = topics.get(position);
+        Item item = items.get(position);
 
         holder.titleText.setText(item.getTitle());
         holder.stockCount.setText(context.getString(R.string.stoked, item.getStockCount()));
@@ -86,9 +85,8 @@ public class TopicListAdapter extends BaseAdapter {
     }
 
     protected void initItems(List<Item> items) {
-        this.items = items;
-        topics.clear();
-        topics.addAll(items);
+        this.items.clear();
+        this.items.addAll(items);
         notifyDataSetChanged();
     }
 
@@ -123,7 +121,16 @@ public class TopicListAdapter extends BaseAdapter {
         }
     }
 
-    private abstract class CommonItemsCallback implements Backend.Callback<List<Item>> {
+    protected void load(Runnable runnable) {
+        //なにもしない
+    }
+
+    public void reload(Runnable runnable) {
+        items.clear();
+        load(runnable);
+    }
+
+    private abstract class ItemsCallback implements Backend.Callback<List<Item>> {
         @Override
         public void onException(Throwable throwable) {
             throwable.printStackTrace();
@@ -140,13 +147,19 @@ public class TopicListAdapter extends BaseAdapter {
 
         ForWhatsNew(Activity activity) {
             super(activity);
-
             title = activity.getString(R.string.home_whats_new);
+            load(null);
+        }
 
-            Backend.sharedInstance().items(false, new CommonItemsCallback() {
+        @Override
+        protected void load(final Runnable runnable) {
+            Backend.sharedInstance().items(false, new ItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
+                    if (runnable != null) {
+                        runnable.run();
+                    }
                 }
             });
         }
@@ -156,13 +169,19 @@ public class TopicListAdapter extends BaseAdapter {
 
         ForContributes(Activity activity) {
             super(activity);
-
             title = activity.getString(R.string.home_self_topic);
+            load(null);
+        }
 
-            Backend.sharedInstance().items(true, new CommonItemsCallback() {
+        @Override
+        protected void load(final Runnable runnable) {
+            Backend.sharedInstance().items(true, new ItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
+                    if (runnable != null) {
+                        runnable.run();
+                    }
                 }
             });
         }
@@ -172,13 +191,19 @@ public class TopicListAdapter extends BaseAdapter {
 
         ForStocks(Activity activity) {
             super(activity);
-
             title = activity.getString(R.string.home_stocks);
+            load(null);
+        }
 
-            Backend.sharedInstance().stocks(new CommonItemsCallback() {
+        @Override
+        protected void load(final Runnable runnable) {
+            Backend.sharedInstance().stocks(new ItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
+                    if (runnable != null) {
+                        runnable.run();
+                    }
                 }
             });
         }
@@ -186,15 +211,24 @@ public class TopicListAdapter extends BaseAdapter {
 
     public static class ByUser extends TopicListAdapter {
 
+        private User user;
+
         ByUser(Activity activity, User user) {
             super(activity);
+            title = user.getUrlName();
+            this.user = user;
+            load(null);
+        }
 
-            title = user.getName();
-
-            Backend.sharedInstance().userItems(user.getUrlName(), new CommonItemsCallback() {
+        @Override
+        protected void load(final Runnable runnable) {
+            Backend.sharedInstance().userItems(user.getUrlName(), new ItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
+                    if (runnable != null) {
+                        runnable.run();
+                    }
                 }
             });
         }
@@ -202,15 +236,24 @@ public class TopicListAdapter extends BaseAdapter {
 
     public static class ByTag extends TopicListAdapter {
 
+        private Tag tag;
+
         ByTag(Activity activity, Tag tag) {
             super(activity);
-
             title = tag.getName();
+            this.tag = tag;
+            load(null);
+        }
 
-            Backend.sharedInstance().tagItems(tag.getUrlName(), new CommonItemsCallback() {
+        @Override
+        protected void load(final Runnable runnable) {
+            Backend.sharedInstance().tagItems(tag.getUrlName(), new ItemsCallback() {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
+                    if (runnable != null) {
+                        runnable.run();
+                    }
                 }
             });
         }
