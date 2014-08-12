@@ -1,10 +1,10 @@
 package com.abplus.qiitaly.app;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,6 +16,7 @@ import com.abplus.qiitaly.app.api.models.Tag;
 import com.abplus.qiitaly.app.api.models.User;
 import com.abplus.qiitaly.app.utils.Dialogs;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -26,17 +27,17 @@ import java.util.List;
  *
  * Created by kazhida on 2014/08/05.
  */
-public class TopicListAdapter extends BaseAdapter {
+public class TopicListAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
     protected List<Item> items = new ArrayList<>();
     protected LayoutInflater inflater;
-    protected Context context;
+    protected Activity activity;
     protected String title;
 
     TopicListAdapter(Activity activity) {
         super();
         inflater = activity.getLayoutInflater();
-        context = activity;
+        this.activity = activity;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class TopicListAdapter extends BaseAdapter {
         Item item = items.get(position);
 
         holder.titleText.setText(item.getTitle());
-        holder.stockCount.setText(context.getString(R.string.stoked, item.getStockCount()));
+        holder.stockCount.setText(activity.getString(R.string.stoked, item.getStockCount()));
 
         if (item.getUpdatedAt().compareTo(item.getCreatedAt()) > 0) {
             holder.descriptionText.setText(updatedDescription(item));
@@ -91,11 +92,11 @@ public class TopicListAdapter extends BaseAdapter {
     }
 
     private String updatedDescription(Item item) {
-        return context.getString(R.string.updated, item.getUser().getUrlName(), item.getUpdatedAtInWords());
+        return activity.getString(R.string.updated, item.getUser().getUrlName(), item.getUpdatedAtInWords());
     }
 
     private String postedDescription(Item item) {
-        return context.getString(R.string.posted, item.getUser().getUrlName(), item.getCreatedAtInWords());
+        return activity.getString(R.string.posted, item.getUser().getUrlName(), item.getCreatedAtInWords());
     }
 
     private void addTag(ViewGroup layout, Tag tag) {
@@ -130,16 +131,22 @@ public class TopicListAdapter extends BaseAdapter {
         load(runnable);
     }
 
+    @Override
+    public void onItemClick(@NotNull AdapterView<?> parent, @NotNull View view, int position, long id) {
+        Item item = items.get(position);
+        activity.startActivity(TopicActivity.startIntent(activity, item));
+    }
+
     private abstract class ItemsCallback implements Backend.Callback<List<Item>> {
         @Override
         public void onException(Throwable throwable) {
             throwable.printStackTrace();
-            Dialogs.errorMessage(context, R.string.err_response, throwable.getLocalizedMessage());
+            Dialogs.errorMessage(activity, R.string.err_response, throwable.getLocalizedMessage());
         }
 
         @Override
         public void onError(String errorReason) {
-            Dialogs.errorMessage(context, R.string.err_response, errorReason);
+            Dialogs.errorMessage(activity, R.string.err_response, errorReason);
         }
     }
 
@@ -260,7 +267,7 @@ public class TopicListAdapter extends BaseAdapter {
     }
 
     public static class BySearch extends TopicListAdapter {
-
+        @Getter
         private String query;
 
         BySearch(Activity activity, String query) {
@@ -268,6 +275,11 @@ public class TopicListAdapter extends BaseAdapter {
             title = query;
             this.query = query;
             load(null);
+        }
+
+        public void reload(String query, final Runnable runnable) {
+            this.query = query;
+            reload(runnable);
         }
 
         @Override

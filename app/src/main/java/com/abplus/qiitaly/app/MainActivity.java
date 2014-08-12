@@ -17,6 +17,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.view.*;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.SearchView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
@@ -202,6 +203,21 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                startActivity(SearchResultActivity.searchIntent(MainActivity.this, query));
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
         return true;
     }
 

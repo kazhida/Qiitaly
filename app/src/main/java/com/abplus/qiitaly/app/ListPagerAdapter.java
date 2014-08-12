@@ -10,15 +10,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
-import com.abplus.qiitaly.app.api.models.Item;
 import com.abplus.qiitaly.app.api.models.Tag;
 import com.abplus.qiitaly.app.api.models.User;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,23 +111,15 @@ public class ListPagerAdapter extends FragmentPagerAdapter {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            final TopicListAdapter topicListAdapter = adapters.get(getArguments().getInt(POSITION));
+            final TopicListAdapter adapter = adapters.get(getArguments().getInt(POSITION));
 
-            listView.setAdapter(topicListAdapter);
-
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(@NotNull AdapterView<?> adapterView, @NotNull View view, int i, long l) {
-                    Activity activity = getActivity();
-                    Item item = (Item) topicListAdapter.getItem(i);
-                    activity.startActivity(TopicActivity.startIntent(activity, item));
-                }
-            });
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener(adapter);
 
             swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    topicListAdapter.reload(new Runnable() {
+                    adapter.reload(new Runnable() {
                         @Override
                         public void run() {
                             swipeLayout.setRefreshing(false);

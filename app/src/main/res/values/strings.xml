@@ -26,6 +26,7 @@
     <string name="stoked">(%d)</string>
     <string name="updated">%1$s が %2$s前に更新しました</string>
     <string name="posted">%1$s が %2$s前に投稿しました</string>
+    <string name="search_result_for">%s の検索結果</string>
 
     <string name="err_login">ログイン失敗</string>
     <string name="err_response">通信失敗</string>
