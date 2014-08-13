@@ -138,14 +138,22 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
     }
 
     private abstract class ItemsCallback implements Backend.Callback<List<Item>> {
+        private Runnable runnable;
+
+        ItemsCallback(Runnable runnable) {
+            this.runnable = runnable;
+        }
+
         @Override
         public void onException(Throwable throwable) {
             throwable.printStackTrace();
+            runnable.run();
             Dialogs.errorMessage(activity, R.string.err_response, throwable.getLocalizedMessage());
         }
 
         @Override
         public void onError(String errorReason) {
+            runnable.run();
             Dialogs.errorMessage(activity, R.string.err_response, errorReason);
         }
     }
@@ -160,7 +168,7 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
 
         @Override
         protected void load(final Runnable runnable) {
-            Backend.sharedInstance().items(false, new ItemsCallback() {
+            Backend.sharedInstance().items(false, new ItemsCallback(runnable) {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
@@ -182,7 +190,7 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
 
         @Override
         protected void load(final Runnable runnable) {
-            Backend.sharedInstance().items(true, new ItemsCallback() {
+            Backend.sharedInstance().items(true, new ItemsCallback(runnable) {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
@@ -204,7 +212,7 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
 
         @Override
         protected void load(final Runnable runnable) {
-            Backend.sharedInstance().stocks(new ItemsCallback() {
+            Backend.sharedInstance().stocks(new ItemsCallback(runnable) {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
@@ -229,7 +237,7 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
 
         @Override
         protected void load(final Runnable runnable) {
-            Backend.sharedInstance().userItems(user.getUrlName(), new ItemsCallback() {
+            Backend.sharedInstance().userItems(user.getUrlName(), new ItemsCallback(runnable) {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
@@ -254,7 +262,7 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
 
         @Override
         protected void load(final Runnable runnable) {
-            Backend.sharedInstance().tagItems(tag.getUrlName(), new ItemsCallback() {
+            Backend.sharedInstance().tagItems(tag.getUrlName(), new ItemsCallback(runnable) {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);
@@ -284,7 +292,7 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
 
         @Override
         protected void load(final Runnable runnable) {
-            Backend.sharedInstance().search(query, new ItemsCallback() {
+            Backend.sharedInstance().search(query, new ItemsCallback(runnable) {
                 @Override
                 public void onSuccess(List<Item> items) {
                     initItems(items);

@@ -7,9 +7,7 @@ import com.abplus.qiitaly.app.api.models.Auth;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import lombok.Getter;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
+import org.apache.http.*;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -43,6 +41,7 @@ class Executor<T> {
     private Map<String, String> params = new HashMap<>();
     private Uri.Builder builder;
     private Backend.EntityEvaluator<T> evaluator;
+    private HeaderElement[] links;
 
     public Executor(@NotNull String path, @Nullable Auth auth, @NotNull Backend.EntityEvaluator<T> evaluator) {
         builder = new Uri.Builder();
@@ -131,6 +130,12 @@ class Executor<T> {
                 HttpResponse httpResponse = httpClient.execute(request);
                 int statusCode = httpResponse.getStatusLine().getStatusCode();
                 String entity = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+                Header header = httpResponse.getFirstHeader("Link");
+                if (header != null) {
+                    links = header.getElements();
+                } else {
+                    links = null;
+                }
                 switch (statusCode) {
                     case HttpStatus.SC_OK:
                         return entity;
