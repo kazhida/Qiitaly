@@ -23,12 +23,12 @@ import org.jetbrains.annotations.NotNull;
  *
  * Created by kazhida on 2014/08/11.
  */
-public class TopicActivity extends Activity {
+public class ArticleActivity extends Activity {
 
     public static final String UUID = "UUID";
 
     public static Intent startIntent(Context context, Item item) {
-        Intent intent = new Intent(context, TopicActivity.class);
+        Intent intent = new Intent(context, ArticleActivity.class);
         intent.putExtra(UUID, item.getUuid());
         return intent;
     }
@@ -36,23 +36,23 @@ public class TopicActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_topic);
+        setContentView(R.layout.activity_article);
 
         String uuid = getIntent().getStringExtra(UUID);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, TopicFragment.newInstance(uuid))
+                    .add(R.id.container, ArticleFragment.newInstance(uuid))
                     .commit();
         }
     }
 
-    public static class TopicFragment extends Fragment {
+    public static class ArticleFragment extends Fragment {
         @InjectView(R.id.web_view)
         WebView webView;
 
-        static TopicFragment newInstance(@NotNull String uuid) {
-            TopicFragment fragment = new TopicFragment();
+        static ArticleFragment newInstance(@NotNull String uuid) {
+            ArticleFragment fragment = new ArticleFragment();
 
             Bundle bundle = new Bundle();
             bundle.putString(UUID, uuid);
@@ -63,7 +63,7 @@ public class TopicActivity extends Activity {
 
         @Override
         public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_topic, container, false);
+            View view = inflater.inflate(R.layout.fragment_article, container, false);
             ButterKnife.inject(this, view);
             return view;
         }

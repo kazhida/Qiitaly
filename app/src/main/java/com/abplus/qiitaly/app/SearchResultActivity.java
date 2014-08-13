@@ -29,7 +29,7 @@ public class SearchResultActivity extends Activity {
     ListView listView;
 
     private static final String QUERY = "QUERY";
-    private TopicListAdapter.BySearch adapter;
+    private ArticleListAdapter.BySearch adapter;
 
     public static Intent searchIntent(Context context, String query) {
         Intent intent = new Intent(context, SearchResultActivity.class);
@@ -51,7 +51,7 @@ public class SearchResultActivity extends Activity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
-        adapter = new TopicListAdapter.BySearch(this, query);
+        adapter = new ArticleListAdapter.BySearch(this, query);
 
         titleText.setText(getString(R.string.search_result_for, query));
         listView.setAdapter(adapter);

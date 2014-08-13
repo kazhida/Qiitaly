@@ -27,14 +27,14 @@ import java.util.List;
  *
  * Created by kazhida on 2014/08/05.
  */
-public class TopicListAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
+public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
     protected List<Item> items = new ArrayList<>();
     protected LayoutInflater inflater;
     protected Activity activity;
     protected String title;
 
-    TopicListAdapter(Activity activity) {
+    ArticleListAdapter(Activity activity) {
         super();
         inflater = activity.getLayoutInflater();
         this.activity = activity;
@@ -60,7 +60,7 @@ public class TopicListAdapter extends BaseAdapter implements AdapterView.OnItemC
         View view = convertView;
 
         if (view == null) {
-            view = inflater.inflate(R.layout.topic_item, parent, false);
+            view = inflater.inflate(R.layout.item_article, parent, false);
             view.setTag(new ViewHolder(view));
         }
         ViewHolder holder = (ViewHolder) view.getTag();
@@ -134,7 +134,7 @@ public class TopicListAdapter extends BaseAdapter implements AdapterView.OnItemC
     @Override
     public void onItemClick(@NotNull AdapterView<?> parent, @NotNull View view, int position, long id) {
         Item item = items.get(position);
-        activity.startActivity(TopicActivity.startIntent(activity, item));
+        activity.startActivity(ArticleActivity.startIntent(activity, item));
     }
 
     private abstract class ItemsCallback implements Backend.Callback<List<Item>> {
@@ -150,7 +150,7 @@ public class TopicListAdapter extends BaseAdapter implements AdapterView.OnItemC
         }
     }
 
-    public static class ForWhatsNew extends TopicListAdapter {
+    public static class ForWhatsNew extends ArticleListAdapter {
 
         ForWhatsNew(Activity activity) {
             super(activity);
@@ -172,7 +172,7 @@ public class TopicListAdapter extends BaseAdapter implements AdapterView.OnItemC
         }
     }
 
-    public static class ForContributes extends TopicListAdapter {
+    public static class ForContributes extends ArticleListAdapter {
 
         ForContributes(Activity activity) {
             super(activity);
@@ -194,7 +194,7 @@ public class TopicListAdapter extends BaseAdapter implements AdapterView.OnItemC
         }
     }
 
-    public static class ForStocks extends TopicListAdapter {
+    public static class ForStocks extends ArticleListAdapter {
 
         ForStocks(Activity activity) {
             super(activity);
@@ -216,7 +216,7 @@ public class TopicListAdapter extends BaseAdapter implements AdapterView.OnItemC
         }
     }
 
-    public static class ByUser extends TopicListAdapter {
+    public static class ByUser extends ArticleListAdapter {
 
         private User user;
 
@@ -241,7 +241,7 @@ public class TopicListAdapter extends BaseAdapter implements AdapterView.OnItemC
         }
     }
 
-    public static class ByTag extends TopicListAdapter {
+    public static class ByTag extends ArticleListAdapter {
 
         private Tag tag;
 
@@ -266,7 +266,7 @@ public class TopicListAdapter extends BaseAdapter implements AdapterView.OnItemC
         }
     }
 
-    public static class BySearch extends TopicListAdapter {
+    public static class BySearch extends ArticleListAdapter {
         @Getter
         private String query;
 

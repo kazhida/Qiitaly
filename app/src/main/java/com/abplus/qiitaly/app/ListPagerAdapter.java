@@ -29,7 +29,7 @@ public class ListPagerAdapter extends FragmentPagerAdapter {
 
     private static final String POSITION = "POSITION";
 
-    private List<TopicListAdapter> adapters = new ArrayList<>();
+    private List<ArticleListAdapter> adapters = new ArrayList<>();
     private long idOffset = 0;
 
     public ListPagerAdapter(FragmentManager manager) {
@@ -64,9 +64,9 @@ public class ListPagerAdapter extends FragmentPagerAdapter {
 
     static ListPagerAdapter forHome(Activity activity, FragmentManager manager) {
         ListPagerAdapter adapter = new ListPagerAdapter(manager);
-        adapter.adapters.add(new TopicListAdapter.ForWhatsNew(activity));
-        adapter.adapters.add(new TopicListAdapter.ForStocks(activity));
-        adapter.adapters.add(new TopicListAdapter.ForContributes(activity));
+        adapter.adapters.add(new ArticleListAdapter.ForWhatsNew(activity));
+        adapter.adapters.add(new ArticleListAdapter.ForStocks(activity));
+        adapter.adapters.add(new ArticleListAdapter.ForContributes(activity));
         adapter.idOffset = 1L << 32;
         return adapter;
     }
@@ -75,7 +75,7 @@ public class ListPagerAdapter extends FragmentPagerAdapter {
         ListPagerAdapter adapter = new ListPagerAdapter(manager);
 
         for (User user: Backend.sharedInstance().getCurrent().getFollowings().getUsers()) {
-            adapter.adapters.add(new TopicListAdapter.ByUser(activity, user));
+            adapter.adapters.add(new ArticleListAdapter.ByUser(activity, user));
         }
         adapter.idOffset = 2L << 32;
 
@@ -86,7 +86,7 @@ public class ListPagerAdapter extends FragmentPagerAdapter {
         ListPagerAdapter adapter = new ListPagerAdapter(manager);
 
         for (Tag tag: Backend.sharedInstance().getCurrent().getFollowings().getTags()) {
-            adapter.adapters.add(new TopicListAdapter.ByTag(activity, tag));
+            adapter.adapters.add(new ArticleListAdapter.ByTag(activity, tag));
         }
         adapter.idOffset = 3L << 32;
 
@@ -102,7 +102,7 @@ public class ListPagerAdapter extends FragmentPagerAdapter {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_topic_list, container, false);
+            View view = inflater.inflate(R.layout.fragment_article_list, container, false);
             ButterKnife.inject(this, view);
             return view;
         }
@@ -111,7 +111,7 @@ public class ListPagerAdapter extends FragmentPagerAdapter {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            final TopicListAdapter adapter = adapters.get(getArguments().getInt(POSITION));
+            final ArticleListAdapter adapter = adapters.get(getArguments().getInt(POSITION));
 
             listView.setAdapter(adapter);
             listView.setOnItemClickListener(adapter);

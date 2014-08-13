@@ -27,7 +27,7 @@
                 android:name=".LoginActivity"/>
         <activity
                 android:configChanges="keyboardHidden|orientation|screenSize"
-                android:name=".TopicActivity"/>
+                android:name=".ArticleActivity"/>
         <activity
                 android:configChanges="keyboardHidden|orientation|screenSize"
                 android:screenOrientation="portrait"
