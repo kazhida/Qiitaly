@@ -15,7 +15,6 @@ import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
 import com.abplus.qiitaly.app.api.models.Item;
 import com.abplus.qiitaly.app.utils.Dialogs;
-import com.abplus.qiitaly.app.utils.HtmlBuilder;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,10 +25,12 @@ import org.jetbrains.annotations.NotNull;
 public class ArticleActivity extends Activity {
 
     public static final String UUID = "UUID";
+    public static final String URL_NAME = "URL_NAME";
 
     public static Intent startIntent(Context context, Item item) {
         Intent intent = new Intent(context, ArticleActivity.class);
-        intent.putExtra(UUID, item.getUuid());
+        intent.putExtra(UUID,     item.getUuid());
+        intent.putExtra(URL_NAME, item.getUser().getUrlName());
         return intent;
     }
 
@@ -39,10 +40,11 @@ public class ArticleActivity extends Activity {
         setContentView(R.layout.activity_article);
 
         String uuid = getIntent().getStringExtra(UUID);
+        String urlName = getIntent().getStringExtra(URL_NAME);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, ArticleFragment.newInstance(uuid))
+                    .add(R.id.container, ArticleFragment.newInstance(urlName, uuid))
                     .commit();
         }
     }
@@ -51,11 +53,12 @@ public class ArticleActivity extends Activity {
         @InjectView(R.id.web_view)
         WebView webView;
 
-        static ArticleFragment newInstance(@NotNull String uuid) {
+        static ArticleFragment newInstance(@NotNull String urlName, @NotNull String uuid) {
             ArticleFragment fragment = new ArticleFragment();
 
             Bundle bundle = new Bundle();
-            bundle.putString(UUID, uuid);
+            bundle.putString(URL_NAME,  urlName);
+            bundle.putString(UUID,      uuid);
             fragment.setArguments(bundle);
 
             return fragment;
@@ -75,12 +78,16 @@ public class ArticleActivity extends Activity {
             final Context context = getActivity();
             final ProgressDialog dialog = Dialogs.startLoading(context);
 
+            final String urlName = getArguments().getString(URL_NAME);
+            final String uuid = getArguments().getString(UUID);
+
             Backend.sharedInstance().item(getArguments().getString(UUID), new Backend.Callback<Item>() {
                 @Override
                 public void onSuccess(Item result) {
                     dialog.dismiss();
-                    HtmlBuilder builder = new HtmlBuilder(result);
-                    webView.loadDataWithBaseURL(null, builder.build(), "text/html", "UTF-8", null);
+//                    HtmlBuilder builder = new HtmlBuilder(result);
+//                    webView.loadDataWithBaseURL(null, builder.build(), "text/html", "UTF-8", null);
+                    webView.loadUrl("http://qiita.com/" + urlName + "/items/" + uuid);
                 }
 
                 @Override
