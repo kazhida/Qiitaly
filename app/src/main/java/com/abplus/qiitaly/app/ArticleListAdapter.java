@@ -2,10 +2,11 @@ package com.abplus.qiitaly.app;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.abplus.qiitaly.app.api.Backend;
 import com.abplus.qiitaly.app.api.models.Item;
 import com.abplus.qiitaly.app.api.models.Tag;
 import com.abplus.qiitaly.app.api.models.User;
+import com.abplus.qiitaly.app.utils.DatabaseHelper;
 import com.abplus.qiitaly.app.utils.Dialogs;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import lombok.Getter;
@@ -29,7 +31,7 @@ import java.util.List;
  *
  * Created by kazhida on 2014/08/05.
  */
-public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
+public class ArticleListAdapter extends BaseAdapter {
 
     protected List<Item> items = new ArrayList<>();
     protected LayoutInflater inflater;
@@ -72,6 +74,21 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
         holder.titleText.setText(item.getTitle());
         holder.stockCount.setText(activity.getString(R.string.stoked, item.getStockCount()));
 
+        Item.Cache cache = Item.Cache.getHolder().get(item.getUuid());
+        if (cache == null) {
+            holder.newItem.setVisibility(View.GONE);
+            holder.updatedItem.setVisibility(View.GONE);
+        } else if (cache.isUnread()) {
+            holder.newItem.setVisibility(View.VISIBLE);
+            holder.updatedItem.setVisibility(View.GONE);
+        } else if (cache.isUpdated()) {
+            holder.newItem.setVisibility(View.GONE);
+            holder.updatedItem.setVisibility(View.VISIBLE);
+        } else {
+            holder.newItem.setVisibility(View.GONE);
+            holder.updatedItem.setVisibility(View.GONE);
+        }
+
         if (item.getUpdatedAt().compareTo(item.getCreatedAt()) > 0) {
             holder.descriptionText.setText(updatedDescription(item));
         } else {
@@ -100,6 +117,22 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
             });
         }
 
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NotNull View v) {
+                if (item.isSaved()) {
+                    DatabaseHelper.sharedInstance().executeWrite(new DatabaseHelper.Writer() {
+                        @Override
+                        public void onWrite(@NotNull SQLiteDatabase db) {
+                            Item.Cache.getHolder().get(item.getUuid()).checked(db);
+                        }
+                    });
+                    notifyDataSetChanged();
+                    activity.startActivity(ArticleActivity.startIntent(activity, item));
+                }
+            }
+        });
+
         return view;
     }
 
@@ -124,6 +157,10 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
         ViewGroup tagLayout;
         @InjectView(R.id.more_button)
         View moreButton;
+        @InjectView(R.id.new_item)
+        View newItem;
+        @InjectView(R.id.updated_item)
+        View updatedItem;
 
         ViewHolder(View view) {
             ButterKnife.inject(this, view);
@@ -148,6 +185,7 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
                 if (runnable != null) {
                     runnable.run();
                 }
+                save(result);
                 notifyDataSetChanged();
             }
 
@@ -190,11 +228,14 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
                         Item last = additional.get(additional.size() - 1);
                         last.setNextUrl(nextUrl);
                     }
+                    save(additional);
+                    items.addAll(position + 1, additional);
                 } else {
                     if (result.size() > 0) {
                         Item last = result.get(result.size() - 1);
                         last.setNextUrl(nextUrl);
                     }
+                    save(result);
                     items.addAll(result);
                 }
                 dialog.dismiss();
@@ -216,10 +257,27 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
         });
     }
 
-    @Override
-    public void onItemClick(@NotNull AdapterView<?> parent, @NotNull View view, int position, long id) {
-        Item item = items.get(position);
-        activity.startActivity(ArticleActivity.startIntent(activity, item));
+    private void save(final List<Item> items) {
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(@NotNull Void... params) {
+                DatabaseHelper.sharedInstance().executeWrite(new DatabaseHelper.Writer() {
+                    @Override
+                    public void onWrite(@NotNull SQLiteDatabase db) {
+                        for (Item item: items) {
+                            Item.Cache.getHolder().save(db, item);
+                        }
+                    }
+                });
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(@NotNull Void result) {
+                notifyDataSetChanged();
+            }
+        }.execute();
     }
 
     public static class ForWhatsNew extends ArticleListAdapter {

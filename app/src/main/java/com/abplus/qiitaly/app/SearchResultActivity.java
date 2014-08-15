@@ -55,7 +55,6 @@ public class SearchResultActivity extends Activity {
 
         titleText.setText(getString(R.string.search_result_for, query));
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(adapter);
 
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

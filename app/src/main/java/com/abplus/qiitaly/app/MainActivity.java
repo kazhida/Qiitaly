@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -21,8 +22,10 @@ import android.widget.SearchView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
+import com.abplus.qiitaly.app.api.models.Item;
 import com.abplus.qiitaly.app.api.models.Tag;
 import com.abplus.qiitaly.app.api.models.User;
+import com.abplus.qiitaly.app.utils.DatabaseHelper;
 import com.abplus.qiitaly.app.utils.Dialogs;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -70,6 +73,14 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+
+        DatabaseHelper.initInstance(this);
+        DatabaseHelper.sharedInstance().executeRead(new DatabaseHelper.Reader() {
+            @Override
+            public void onRead(@NotNull SQLiteDatabase db) {
+                Item.Cache.getHolder().load(db);
+            }
+        });
 
         drawer = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 

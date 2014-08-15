@@ -114,7 +114,6 @@ public class ListPagerAdapter extends FragmentPagerAdapter {
             final ArticleListAdapter adapter = adapters.get(getArguments().getInt(POSITION));
 
             listView.setAdapter(adapter);
-            listView.setOnItemClickListener(adapter);
 
             swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override

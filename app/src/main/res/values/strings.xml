@@ -28,6 +28,8 @@
     <string name="posted">%1$s が %2$s前に投稿しました</string>
     <string name="search_result_for">%s の検索結果</string>
     <string name="read_more">もっと読む…</string>
+    <string name="new_item">New!</string>
+    <string name="updated_item">Updated!</string>
 
     <string name="err_login">ログイン失敗</string>
     <string name="err_response">通信失敗</string>
