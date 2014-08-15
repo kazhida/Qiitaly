@@ -3,6 +3,7 @@ package com.abplus.qiitaly.app.api.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -50,4 +51,8 @@ public class Item {
     private Boolean stocked;
     @Getter @Expose @SuppressWarnings("unused")
     private List<Comment> comments;
+
+    //  ここから下は、APIのレスポンスにはない
+    @Getter @Setter @SuppressWarnings("unused")
+    private String nextUrl;
 }

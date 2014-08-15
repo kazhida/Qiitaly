@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 実際にやりとりをするクラス
@@ -39,9 +41,10 @@ class Executor<T> {
 
     private Handler handler = new Handler();
     private Map<String, String> params = new HashMap<>();
+    private String url;
     private Uri.Builder builder;
     private Backend.EntityEvaluator<T> evaluator;
-    private HeaderElement[] links;
+    private Header linkHeader;
 
     public Executor(@NotNull String path, @Nullable Auth auth, @NotNull Backend.EntityEvaluator<T> evaluator) {
         builder = new Uri.Builder();
@@ -56,12 +59,17 @@ class Executor<T> {
         this.evaluator = evaluator;
     }
 
+    public Executor(@NotNull String url, @NotNull Backend.EntityEvaluator<T> evaluator) {
+        this.url = url;
+        this.evaluator = evaluator;
+    }
+
     public void addParam(@NotNull String name, @NotNull String value) {
         params.put(name, value);
     }
 
     private HttpPost buildPost() throws UnsupportedEncodingException {
-        HttpPost post = new HttpPost(builder.build().toString());
+        HttpPost post = new HttpPost(url != null ? url : builder.build().toString());
 
         List<BasicNameValuePair> postParams = new ArrayList<>();
         for (String key: params.keySet()) {
@@ -78,7 +86,7 @@ class Executor<T> {
         for (String key: params.keySet()) {
             builder.appendQueryParameter(key, params.get(key));
         }
-        return new HttpGet(builder.build().toString());
+        return new HttpGet(url != null ? url : builder.build().toString());
     }
 
     private static class ResponseException extends RuntimeException {
@@ -130,12 +138,7 @@ class Executor<T> {
                 HttpResponse httpResponse = httpClient.execute(request);
                 int statusCode = httpResponse.getStatusLine().getStatusCode();
                 String entity = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
-                Header header = httpResponse.getFirstHeader("Link");
-                if (header != null) {
-                    links = header.getElements();
-                } else {
-                    links = null;
-                }
+                linkHeader = httpResponse.getFirstHeader("Link");
                 switch (statusCode) {
                     case HttpStatus.SC_OK:
                         return entity;
@@ -171,8 +174,30 @@ class Executor<T> {
                 if (postProcess != null) {
                     postProcess.onPostProcess(result);
                 }
-                callback.onSuccess(result);
+                if (linkHeader == null) {
+                    callback.onSuccess(result, null);
+                } else {
+                    //  Linkヘッダの内容を意図通りに解釈してくれないので、自前で実装する
+                    Map<String, String> elements = getLinks(linkHeader.getValue());
+                    callback.onSuccess(result, elements.get("next"));
+                }
             }
+        }
+
+        private Map<String, String> getLinks(String value) {
+            Map<String, String> map = new HashMap<>();
+
+            //  <url_1>; rel="key_1", <url_2>; rel="key_2", ...
+            Pattern pattern = Pattern.compile("<([^>]+)>; *rel=\"(.*)\"");
+
+            for (String element: value.split(",")) {
+                Matcher matcher = pattern.matcher(element);
+                if (matcher.matches()) {
+                    map.put(matcher.group(2), matcher.group(1));
+                }
+            }
+
+            return map;
         }
     }
 

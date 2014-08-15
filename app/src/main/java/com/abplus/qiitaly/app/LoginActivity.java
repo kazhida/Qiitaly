@@ -71,7 +71,7 @@ public class LoginActivity extends Activity {
 
             Backend.sharedInstance().auth(this, userName, password, new Backend.Callback<Auth>() {
                 @Override
-                public void onSuccess(Auth auth) {
+                public void onSuccess(Auth auth, String nextUrl) {
                     dialog.dismiss();
                     setResult(Activity.RESULT_OK);
                     finish();

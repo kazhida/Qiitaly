@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class Backend {
     private static final String KEY_URL_NAME = "KEY_URL_NAME";
 
     public interface Callback<T> {
-        void onSuccess(T result);
+        void onSuccess(T result, @Nullable String nextUrl);
         void onException(Throwable throwable);
         void onError(String errorReason);
     }
@@ -228,6 +229,17 @@ public class Backend {
             }
         });
         executor.addParam("q", query);
+        executor.get(callback);
+    }
+
+    //  続きの読み込み
+    public void moreItems(@NotNull String url, @NotNull final Callback<List<Item>> callback) {
+        Executor<List<Item>> executor = new Executor<>(url, new EntityEvaluator<List<Item>>() {
+            @Override
+            public List<Item> fromEntity(@NotNull String entity) {
+                return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
+            }
+        });
         executor.get(callback);
     }
 }

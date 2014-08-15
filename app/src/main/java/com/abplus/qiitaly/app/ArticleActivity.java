@@ -83,7 +83,7 @@ public class ArticleActivity extends Activity {
 
             Backend.sharedInstance().item(getArguments().getString(UUID), new Backend.Callback<Item>() {
                 @Override
-                public void onSuccess(Item result) {
+                public void onSuccess(Item result, String nextUrl) {
                     dialog.dismiss();
 //                    HtmlBuilder builder = new HtmlBuilder(result);
 //                    webView.loadDataWithBaseURL(null, builder.build(), "text/html", "UTF-8", null);

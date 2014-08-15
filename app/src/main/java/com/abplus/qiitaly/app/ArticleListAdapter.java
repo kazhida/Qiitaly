@@ -1,6 +1,7 @@
 package com.abplus.qiitaly.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.abplus.qiitaly.app.utils.Dialogs;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +58,7 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
     }
 
     @Override
-    public View getView(int position, View convertView, @NotNull ViewGroup parent) {
+    public View getView(final int position, View convertView, @NotNull ViewGroup parent) {
         View view = convertView;
 
         if (view == null) {
@@ -65,7 +67,7 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
         }
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        Item item = items.get(position);
+        final Item item = items.get(position);
 
         holder.titleText.setText(item.getTitle());
         holder.stockCount.setText(activity.getString(R.string.stoked, item.getStockCount()));
@@ -76,19 +78,29 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
             holder.descriptionText.setText(postedDescription(item));
         }
 
+        holder.tagLayout.removeAllViews();
         for (Tag tag: item.getTags()) {
-            addTag(holder.tagLayout, tag);
+            TextView textView = (TextView) inflater.inflate(R.layout.tag_text, holder.tagLayout, false);
+            textView.setText(tag.getName());
+            holder.tagLayout.addView(textView);
         }
 
         ImageLoader.getInstance().displayImage(item.getUser().getProfileImageUrl(), holder.iconImage);
 
-        return view;
-    }
+        if (item.getNextUrl() == null) {
+            holder.moreButton.setVisibility(View.GONE);
+            holder.moreButton.setOnClickListener(null);
+        } else {
+            holder.moreButton.setVisibility(View.VISIBLE);
+            holder.moreButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(@NotNull View v) {
+                    readMore(position, item.getNextUrl());
+                }
+            });
+        }
 
-    protected void initItems(List<Item> items) {
-        this.items.clear();
-        this.items.addAll(items);
-        notifyDataSetChanged();
+        return view;
     }
 
     private String updatedDescription(Item item) {
@@ -97,12 +109,6 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
 
     private String postedDescription(Item item) {
         return activity.getString(R.string.posted, item.getUser().getUrlName(), item.getCreatedAtInWords());
-    }
-
-    private void addTag(ViewGroup layout, Tag tag) {
-        TextView textView = (TextView) inflater.inflate(R.layout.tag_text, layout, false);
-        textView.setText(tag.getName());
-        layout.addView(textView);
     }
 
     protected class ViewHolder {
@@ -116,19 +122,98 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
         TextView stockCount;
         @InjectView(R.id.tag_layout)
         ViewGroup tagLayout;
+        @InjectView(R.id.more_button)
+        View moreButton;
 
         ViewHolder(View view) {
             ButterKnife.inject(this, view);
         }
     }
 
-    protected void load(Runnable runnable) {
+    protected void load(Backend.Callback<List<Item>> callback) {
         //なにもしない
     }
 
-    public void reload(Runnable runnable) {
+    public void reload(final Runnable runnable) {
         items.clear();
-        load(runnable);
+
+        load(new Backend.Callback<List<Item>>() {
+            @Override
+            public void onSuccess(List<Item> result, @Nullable String nextUrl) {
+                items.clear();
+                items.addAll(result);
+                if (items.size() > 0) {
+                    items.get(items.size() - 1).setNextUrl(nextUrl);
+                }
+                if (runnable != null) {
+                    runnable.run();
+                }
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onException(Throwable throwable) {
+                throwable.printStackTrace();
+                if (runnable != null) {
+                    runnable.run();
+                }
+                Dialogs.errorMessage(activity, R.string.err_response, throwable.getLocalizedMessage());
+            }
+
+            @Override
+            public void onError(String errorReason) {
+                if (runnable != null) {
+                    runnable.run();
+                }
+                Dialogs.errorMessage(activity, R.string.err_response, errorReason);
+            }
+        });
+    }
+
+    public void readMore(final int position, String nextUrl) {
+
+        final ProgressDialog dialog = Dialogs.startLoading(activity);
+
+        Backend.sharedInstance().moreItems(nextUrl, new Backend.Callback<List<Item>>() {
+            @Override
+            public void onSuccess(List<Item> result, @Nullable String nextUrl) {
+                items.get(position).setNextUrl(null);
+
+                if (position < items.size() - 1) {
+                    Item next = items.get(position + 1);
+                    List<Item> additional = new ArrayList<>();
+                    for (Item item : result) {
+                        if (item.getUuid().equals(next.getUuid())) break;
+                        additional.add(item);
+                    }
+                    if (result.size() == additional.size() && additional.size() > 0) {
+                        Item last = additional.get(additional.size() - 1);
+                        last.setNextUrl(nextUrl);
+                    }
+                } else {
+                    if (result.size() > 0) {
+                        Item last = result.get(result.size() - 1);
+                        last.setNextUrl(nextUrl);
+                    }
+                    items.addAll(result);
+                }
+                dialog.dismiss();
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onException(Throwable throwable) {
+                dialog.dismiss();
+                throwable.printStackTrace();
+                Dialogs.errorMessage(activity, R.string.err_response, throwable.getLocalizedMessage());
+            }
+
+            @Override
+            public void onError(String errorReason) {
+                dialog.dismiss();
+                Dialogs.errorMessage(activity, R.string.err_response, errorReason);
+            }
+        });
     }
 
     @Override
@@ -137,46 +222,17 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
         activity.startActivity(ArticleActivity.startIntent(activity, item));
     }
 
-    private abstract class ItemsCallback implements Backend.Callback<List<Item>> {
-        private Runnable runnable;
-
-        ItemsCallback(Runnable runnable) {
-            this.runnable = runnable;
-        }
-
-        @Override
-        public void onException(Throwable throwable) {
-            throwable.printStackTrace();
-            runnable.run();
-            Dialogs.errorMessage(activity, R.string.err_response, throwable.getLocalizedMessage());
-        }
-
-        @Override
-        public void onError(String errorReason) {
-            runnable.run();
-            Dialogs.errorMessage(activity, R.string.err_response, errorReason);
-        }
-    }
-
     public static class ForWhatsNew extends ArticleListAdapter {
 
         ForWhatsNew(Activity activity) {
             super(activity);
             title = activity.getString(R.string.home_whats_new);
-            load(null);
+            reload(null);
         }
 
         @Override
-        protected void load(final Runnable runnable) {
-            Backend.sharedInstance().items(false, new ItemsCallback(runnable) {
-                @Override
-                public void onSuccess(List<Item> items) {
-                    initItems(items);
-                    if (runnable != null) {
-                        runnable.run();
-                    }
-                }
-            });
+        protected void load(Backend.Callback<List<Item>> callback) {
+            Backend.sharedInstance().items(false, callback);
         }
     }
 
@@ -185,20 +241,12 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
         ForContributes(Activity activity) {
             super(activity);
             title = activity.getString(R.string.home_self_topic);
-            load(null);
+            reload(null);
         }
 
         @Override
-        protected void load(final Runnable runnable) {
-            Backend.sharedInstance().items(true, new ItemsCallback(runnable) {
-                @Override
-                public void onSuccess(List<Item> items) {
-                    initItems(items);
-                    if (runnable != null) {
-                        runnable.run();
-                    }
-                }
-            });
+        protected void load(Backend.Callback<List<Item>> callback) {
+            Backend.sharedInstance().items(true, callback);
         }
     }
 
@@ -207,20 +255,12 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
         ForStocks(Activity activity) {
             super(activity);
             title = activity.getString(R.string.home_stocks);
-            load(null);
+            reload(null);
         }
 
         @Override
-        protected void load(final Runnable runnable) {
-            Backend.sharedInstance().stocks(new ItemsCallback(runnable) {
-                @Override
-                public void onSuccess(List<Item> items) {
-                    initItems(items);
-                    if (runnable != null) {
-                        runnable.run();
-                    }
-                }
-            });
+        protected void load(Backend.Callback<List<Item>> callback) {
+            Backend.sharedInstance().stocks(callback);
         }
     }
 
@@ -232,20 +272,12 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
             super(activity);
             title = user.getUrlName();
             this.user = user;
-            load(null);
+            reload(null);
         }
 
         @Override
-        protected void load(final Runnable runnable) {
-            Backend.sharedInstance().userItems(user.getUrlName(), new ItemsCallback(runnable) {
-                @Override
-                public void onSuccess(List<Item> items) {
-                    initItems(items);
-                    if (runnable != null) {
-                        runnable.run();
-                    }
-                }
-            });
+        protected void load(Backend.Callback<List<Item>> callback) {
+            Backend.sharedInstance().userItems(user.getUrlName(), callback);
         }
     }
 
@@ -257,20 +289,12 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
             super(activity);
             title = tag.getName();
             this.tag = tag;
-            load(null);
+            reload(null);
         }
 
         @Override
-        protected void load(final Runnable runnable) {
-            Backend.sharedInstance().tagItems(tag.getUrlName(), new ItemsCallback(runnable) {
-                @Override
-                public void onSuccess(List<Item> items) {
-                    initItems(items);
-                    if (runnable != null) {
-                        runnable.run();
-                    }
-                }
-            });
+        protected void load(Backend.Callback<List<Item>> callback) {
+            Backend.sharedInstance().tagItems(tag.getUrlName(), callback);
         }
     }
 
@@ -282,7 +306,7 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
             super(activity);
             title = query;
             this.query = query;
-            load(null);
+            reload(null);
         }
 
         public void reload(String query, final Runnable runnable) {
@@ -291,16 +315,8 @@ public class ArticleListAdapter extends BaseAdapter implements AdapterView.OnIte
         }
 
         @Override
-        protected void load(final Runnable runnable) {
-            Backend.sharedInstance().search(query, new ItemsCallback(runnable) {
-                @Override
-                public void onSuccess(List<Item> items) {
-                    initItems(items);
-                    if (runnable != null) {
-                        runnable.run();
-                    }
-                }
-            });
+        protected void load(Backend.Callback<List<Item>> callback) {
+            Backend.sharedInstance().search(query, callback);
         }
     }
 }

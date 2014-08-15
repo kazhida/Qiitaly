@@ -179,15 +179,15 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
         Backend.sharedInstance().user(new ApiCallback<User>(getActivity(), dialog) {
             @Override
-            public void onSuccess(final User user) {
+            public void onSuccess(final User user, String nextUrl) {
                 Backend.sharedInstance().usersFollowingUsers(user.getUrlName(), new ApiCallback<List<User>>(getActivity(), dialog) {
                     @Override
-                    public void onSuccess(List<User> users) {
+                    public void onSuccess(List<User> users, String nextUrl) {
                         user.addFollowingUsers(users);
 
                         Backend.sharedInstance().usersFollowingTags(user.getUrlName(), new ApiCallback<List<Tag>>(getActivity(), dialog) {
                             @Override
-                            public void onSuccess(List<Tag> tags) {
+                            public void onSuccess(List<Tag> tags, String nextUrl) {
                                 user.addFollowingTags(tags);
 
                                 dialog.dismiss();
