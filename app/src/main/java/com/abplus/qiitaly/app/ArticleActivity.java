@@ -1,21 +1,23 @@
 package com.abplus.qiitaly.app;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.webkit.WebView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.abplus.qiitaly.app.api.Backend;
 import com.abplus.qiitaly.app.api.models.Item;
 import com.abplus.qiitaly.app.utils.Dialogs;
+import com.abplus.qiitaly.app.utils.HtmlBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * 投稿を表示するアクティビティ
@@ -25,14 +27,14 @@ import org.jetbrains.annotations.NotNull;
 public class ArticleActivity extends Activity {
 
     public static final String UUID = "UUID";
-    public static final String URL_NAME = "URL_NAME";
 
     public static Intent startIntent(Context context, Item item) {
         Intent intent = new Intent(context, ArticleActivity.class);
         intent.putExtra(UUID,     item.getUuid());
-        intent.putExtra(URL_NAME, item.getUser().getUrlName());
         return intent;
     }
+
+    private Item.Cache itemCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,29 +42,69 @@ public class ArticleActivity extends Activity {
         setContentView(R.layout.activity_article);
 
         String uuid = getIntent().getStringExtra(UUID);
-        String urlName = getIntent().getStringExtra(URL_NAME);
+        itemCache = Item.Cache.getHolder().get(uuid);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, ArticleFragment.newInstance(urlName, uuid))
+                    .add(R.id.container, new ArticleFragment())
                     .commit();
         }
     }
 
-    public static class ArticleFragment extends Fragment {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.article, menu);
+        menu.findItem(R.id.action_stock).setEnabled(! itemCache.isStocked());
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_stock:
+                stock(itemCache.getUuid());
+                return true;
+            case R.id.action_browse:
+                openUrl(itemCache.getUrl());
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void openUrl(String url) {
+        Uri uri = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
+
+    private void stock(String uuid) {
+        final ProgressDialog dialog = Dialogs.startLoading(this);
+        Backend.sharedInstance().stock(uuid, new Backend.Callback<String>() {
+            @Override
+            public void onSuccess(String result, @Nullable String nextUrl) {
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onException(Throwable throwable) {
+                dialog.dismiss();
+                throwable.printStackTrace();
+                Dialogs.errorMessage(ArticleActivity.this, R.string.err_response, throwable.getLocalizedMessage());
+            }
+
+            @Override
+            public void onError(String errorReason) {
+                dialog.dismiss();
+                Dialogs.errorMessage(ArticleActivity.this, R.string.err_response, errorReason);
+            }
+        });
+    }
+
+    @SuppressLint("ValidFragment")
+    public class ArticleFragment extends Fragment {
         @InjectView(R.id.web_view)
         WebView webView;
-
-        static ArticleFragment newInstance(@NotNull String urlName, @NotNull String uuid) {
-            ArticleFragment fragment = new ArticleFragment();
-
-            Bundle bundle = new Bundle();
-            bundle.putString(URL_NAME,  urlName);
-            bundle.putString(UUID,      uuid);
-            fragment.setArguments(bundle);
-
-            return fragment;
-        }
 
         @Override
         public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,34 +117,12 @@ public class ArticleActivity extends Activity {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            final Context context = getActivity();
-            final ProgressDialog dialog = Dialogs.startLoading(context);
-
-            final String urlName = getArguments().getString(URL_NAME);
-            final String uuid = getArguments().getString(UUID);
-
-            Backend.sharedInstance().item(getArguments().getString(UUID), new Backend.Callback<Item>() {
-                @Override
-                public void onSuccess(Item result, String nextUrl) {
-                    dialog.dismiss();
-//                    HtmlBuilder builder = new HtmlBuilder(result);
-//                    webView.loadDataWithBaseURL(null, builder.build(), "text/html", "UTF-8", null);
-                    webView.loadUrl("http://qiita.com/" + urlName + "/items/" + uuid);
-                }
-
-                @Override
-                public void onException(Throwable throwable) {
-                    dialog.dismiss();
-                    throwable.printStackTrace();
-                    Dialogs.errorMessage(context, R.string.err_response, throwable.getLocalizedMessage());
-                }
-
-                @Override
-                public void onError(String errorReason) {
-                    dialog.dismiss();
-                    Dialogs.errorMessage(context, R.string.err_response, errorReason);
-                }
-            });
+            if (itemCache == null) {
+                getActivity().finish();
+            } else {
+                HtmlBuilder builder = new HtmlBuilder(itemCache);
+                webView.loadDataWithBaseURL(null, builder.build(), "text/html", "UTF-8", null);
+            }
         }
     }
 }

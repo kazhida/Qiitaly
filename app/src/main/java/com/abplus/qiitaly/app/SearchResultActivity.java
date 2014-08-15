@@ -71,7 +71,7 @@ public class SearchResultActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.search, menu);
 
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setQuery(adapter.getQuery(), false);

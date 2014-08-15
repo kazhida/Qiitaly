@@ -91,7 +91,7 @@ public class Backend {
     }
 
     interface EntityEvaluator<T> {
-        T fromEntity(@NotNull String entity);
+        T fromEntity(@Nullable String entity);
     }
 
     interface PostProcess<T> {
@@ -103,7 +103,7 @@ public class Backend {
     public void auth(@NotNull final Context context, @NotNull String userName, @NotNull String password, @NotNull final Callback<Auth> callback) {
         Executor<Auth> executor = new Executor<>("auth", null, new EntityEvaluator<Auth>() {
             @Override
-            public Auth fromEntity(@NotNull String entity) {
+            public Auth fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, Auth.class);
             }
         });
@@ -123,7 +123,7 @@ public class Backend {
     public void user(@NotNull final Callback<User> callback) {
         Executor<User> executor = new Executor<>("user", auth, new EntityEvaluator<User>() {
             @Override
-            public User fromEntity(@NotNull String entity) {
+            public User fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, User.class);
             }
         });
@@ -140,7 +140,7 @@ public class Backend {
     public void usersFollowingUsers(@NotNull String urlName, @NotNull final Callback<List<User>> callback) {
         Executor<List<User>> executor = new Executor<>("users/" + urlName + "/following_users", auth, new EntityEvaluator<List<User>>() {
             @Override
-            public List<User> fromEntity(@NotNull String entity) {
+            public List<User> fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, new TypeToken<List<User>>(){}.getType());
             }
         });
@@ -152,7 +152,7 @@ public class Backend {
     public void usersFollowingTags(String urlName, final Callback<List<Tag>> callback) {
         Executor<List<Tag>> executor = new Executor<>("users/" + urlName + "/following_tags", auth, new EntityEvaluator<List<Tag>>() {
             @Override
-            public List<Tag> fromEntity(@NotNull String entity) {
+            public List<Tag> fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, new TypeToken<List<Tag>>(){}.getType());
             }
         });
@@ -164,7 +164,7 @@ public class Backend {
     public void items(boolean withAuth, @NotNull final Callback<List<Item>> callback) {
         Executor<List<Item>> executor = new Executor<>("items", withAuth ? auth : null, new EntityEvaluator<List<Item>>() {
             @Override
-            public List<Item> fromEntity(@NotNull String entity) {
+            public List<Item> fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
             }
         });
@@ -176,7 +176,7 @@ public class Backend {
     public void item(@NotNull String uuid, @NotNull final Callback<Item> callback) {
         Executor<Item> executor = new Executor<>("items/" + uuid, auth, new EntityEvaluator<Item>() {
             @Override
-            public Item fromEntity(@NotNull String entity) {
+            public Item fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, Item.class);
             }
         });
@@ -188,7 +188,7 @@ public class Backend {
     public void stocks(@NotNull final Callback<List<Item>> callback) {
         Executor<List<Item>> executor = new Executor<>("stocks", auth, new EntityEvaluator<List<Item>>() {
             @Override
-            public List<Item> fromEntity(@NotNull String entity) {
+            public List<Item> fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
             }
         });
@@ -200,7 +200,7 @@ public class Backend {
     public void userItems(@NotNull String urlName, @NotNull final Callback<List<Item>> callback) {
         Executor<List<Item>> executor = new Executor<>("users/" + urlName + "/items", auth, new EntityEvaluator<List<Item>>() {
             @Override
-            public List<Item> fromEntity(@NotNull String entity) {
+            public List<Item> fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
             }
         });
@@ -212,7 +212,7 @@ public class Backend {
     public void tagItems(@NotNull String tag, @NotNull final Callback<List<Item>> callback) {
         Executor<List<Item>> executor = new Executor<>("tags/" + tag + "/items", auth, new EntityEvaluator<List<Item>>() {
             @Override
-            public List<Item> fromEntity(@NotNull String entity) {
+            public List<Item> fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
             }
         });
@@ -224,7 +224,7 @@ public class Backend {
     public void search(@NotNull String query, @NotNull final Callback<List<Item>> callback) {
         Executor<List<Item>> executor = new Executor<>("search", auth, new EntityEvaluator<List<Item>>() {
             @Override
-            public List<Item> fromEntity(@NotNull String entity) {
+            public List<Item> fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
             }
         });
@@ -236,10 +236,22 @@ public class Backend {
     public void moreItems(@NotNull String url, @NotNull final Callback<List<Item>> callback) {
         Executor<List<Item>> executor = new Executor<>(url, new EntityEvaluator<List<Item>>() {
             @Override
-            public List<Item> fromEntity(@NotNull String entity) {
+            public List<Item> fromEntity(@Nullable String entity) {
                 return new Gson().fromJson(entity, new TypeToken<List<Item>>(){}.getType());
             }
         });
         executor.get(callback);
+    }
+
+    //  投稿のストック
+    //  PUT /api/v1/items/:uuid/stock
+    public void stock(@NotNull String uuid, @NotNull final Callback<String> callback) {
+        Executor<String> executor = new Executor<>("items/" + uuid + "/stock", auth, new EntityEvaluator<String>() {
+            @Override
+            public String fromEntity(@Nullable String entity) {
+                return "";
+            }
+        });
+        executor.put(callback, null);
     }
 }

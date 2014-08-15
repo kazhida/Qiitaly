@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * Created by kazhida on 2014/08/15.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String DB_NAME = "dd.db";
+    private static final String DB_NAME = "qiitaly.db";
     private static final int DB_VERSION = 3;
 
     private static DatabaseHelper shared;
@@ -37,7 +37,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(@NotNull SQLiteDatabase db, int oldVersion, int newVersion) {}
+    public void onUpgrade(@NotNull SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (1 <= oldVersion && oldVersion < 2) {
+            db.execSQL(Item.Cache.ADD_URL);
+        }
+        if (1 <= oldVersion && oldVersion < 3) {
+            db.execSQL(Item.Cache.ADD_STOCKED);
+        }
+    }
 
     public interface Writer {
         void onWrite(@NotNull SQLiteDatabase db);

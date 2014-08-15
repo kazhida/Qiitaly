@@ -11,6 +11,7 @@ import org.apache.http.*;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -54,7 +55,8 @@ class Executor<T> {
         if (! path.endsWith("/"))   path = path + "/";
         builder.path(PATH + path);
         if (auth != null) {
-            builder.appendQueryParameter("token", auth.getToken());
+//            builder.appendQueryParameter("token", auth.getToken());
+            params.put("token", auth.getToken());
         }
         this.evaluator = evaluator;
     }
@@ -80,6 +82,20 @@ class Executor<T> {
         post.setEntity(entity);
 
         return post;
+    }
+
+    private HttpPut buildPut() throws UnsupportedEncodingException {
+        HttpPut put = new HttpPut(url != null ? url : builder.build().toString());
+
+        List<BasicNameValuePair> postParams = new ArrayList<>();
+        for (String key: params.keySet()) {
+            postParams.add(new BasicNameValuePair(key, params.get(key)));
+        }
+
+        HttpEntity entity = new UrlEncodedFormEntity(postParams, HTTP.UTF_8);
+        put.setEntity(entity);
+
+        return put;
     }
 
     private HttpGet buildGet() {
@@ -137,7 +153,7 @@ class Executor<T> {
             try {
                 HttpResponse httpResponse = httpClient.execute(request);
                 int statusCode = httpResponse.getStatusLine().getStatusCode();
-                String entity = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+                String entity = httpResponse.getEntity() == null ? null : EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
                 linkHeader = httpResponse.getFirstHeader("Link");
                 switch (statusCode) {
                     case HttpStatus.SC_OK:
@@ -228,6 +244,23 @@ class Executor<T> {
             protected T doInBackground(@Nullable Void... voids) {
                 try {
                     String entity = executeRequest(buildPost());
+                    return evaluator.fromEntity(entity);
+                } catch (Exception e) {
+                    handleException(callback, e);
+                    return null;
+                }
+            }
+        }.execute();
+    }
+
+    void put(@NotNull final Backend.Callback<T> callback, @Nullable Backend.PostProcess<T> postProcess) {
+
+        new AsyncExecute(callback, postProcess) {
+
+            @Override
+            protected T doInBackground(@Nullable Void... params) {
+                try {
+                    String entity = executeRequest(buildPut());
                     return evaluator.fromEntity(entity);
                 } catch (Exception e) {
                     handleException(callback, e);

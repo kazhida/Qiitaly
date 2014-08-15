@@ -76,17 +76,34 @@ public class Item {
         private static final String CREATED_TIME_IN_MILLIS  = "CREATED_TIME_IN_MILLIS";
         private static final String UPDATED_TIME_IN_MILLIS  = "UPDATED_TIME_IN_MILLIS";
         private static final String CHECKED_TIME_IN_MILLIS  = "CHECKED_TIME_IN_MILLIS";
+        private static final String CREATED_AT_IN_WORDS     = "CREATED_AT_IN_WORDS";
+        private static final String UPDATED_AT_IN_WORDS     = "UPDATED_AT_IN_WORDS";
+        private static final String URL                     = "URL";
+        private static final String STOCKED                 = "STOCKED";
 
-        public static final String CREATE_ITEMS = "create table " + ITEMS + " (" +
+        public static final String CREATE_ITEMS =
+                "create table " + ITEMS + " (" +
                 UUID                    + " text primary key,   " +
                 USER_NAME               + " text,               " +
                 USER_URL_NAME           + " text,               " +
                 USER_PROFILE_IMAGE_URL  + " text,               " +
                 TITLE                   + " text,               " +
                 BODY                    + " text,               " +
+                CREATED_AT_IN_WORDS     + " text,               " +
+                UPDATED_AT_IN_WORDS     + " text,               " +
                 CREATED_TIME_IN_MILLIS  + " integer,            " +
                 UPDATED_TIME_IN_MILLIS  + " integer,            " +
-                CHECKED_TIME_IN_MILLIS  + " integer);           ";
+                CHECKED_TIME_IN_MILLIS  + " integer,            " +
+                STOCKED                 + " integer,            " +
+                URL                     + " text);              ";
+
+        public static final String ADD_URL =
+                "alter table " + ITEMS + " add column " +
+                URL + " text;";
+
+        public static final String ADD_STOCKED =
+                "alter table " + ITEMS + " add column " +
+                        STOCKED + " integer;";
 
         private static final String[] columns = new String[] {
                 UUID,
@@ -97,18 +114,39 @@ public class Item {
                 BODY,
                 CREATED_TIME_IN_MILLIS,
                 UPDATED_TIME_IN_MILLIS,
-                CHECKED_TIME_IN_MILLIS
+                CHECKED_TIME_IN_MILLIS,
+                CREATED_AT_IN_WORDS,
+                UPDATED_AT_IN_WORDS,
+                URL,
+                STOCKED
         };
 
+        @Getter
         private String  uuid;
+        @Getter
         private String  userName;
+        @Getter
         private String  userUrlName;
+        @Getter
         private String  userProfileImageUrl;
+        @Getter
         private String  title;
+        @Getter
         private String  body;
+        @Getter
         private long    createdAt;
+        @Getter
         private long    updatedAt;
+        @Getter
         private long    checkedAt = 0;
+        @Getter
+        private String  createdAtInWords;
+        @Getter
+        private String  updatedAtInWords;
+        @Getter
+        private String  url;
+        @Getter
+        private boolean stocked;
 
         private Cache(Item item) {
             this.uuid                = item.uuid;
@@ -117,6 +155,10 @@ public class Item {
             this.userProfileImageUrl = item.user.getProfileImageUrl();
             this.title               = item.title;
             this.body                = item.body;
+            this.createdAtInWords    = item.createdAtInWords;
+            this.updatedAtInWords    = item.updatedAtInWords;
+            this.url                 = item.url;
+            this.stocked             = item.stocked != null && item.stocked;
             try {
                 this.createdAt = timeFormat.parse(item.createdAt).getTime();
             } catch (ParseException e) {
@@ -139,6 +181,10 @@ public class Item {
             createdAt           = cursor.getLong(6);
             updatedAt           = cursor.getLong(7);
             checkedAt           = cursor.getLong(8);
+            createdAtInWords    = cursor.getString(9);
+            updatedAtInWords    = cursor.getString(10);
+            url                 = cursor.getString(11);
+            stocked             = cursor.getInt(12) != 0;
         }
 
         public static final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
@@ -202,17 +248,19 @@ public class Item {
                 cv.put(USER_PROFILE_IMAGE_URL,  cache.userProfileImageUrl);
                 cv.put(TITLE,                   cache.title);
                 cv.put(BODY,                    cache.body);
+                cv.put(CREATED_AT_IN_WORDS,     cache.createdAtInWords);
+                cv.put(UPDATED_AT_IN_WORDS,     cache.updatedAtInWords);
                 cv.put(CREATED_TIME_IN_MILLIS,  cache.createdAt);
                 cv.put(UPDATED_TIME_IN_MILLIS,  cache.updatedAt);
                 cv.put(CHECKED_TIME_IN_MILLIS,  cache.checkedAt);
+                cv.put(URL,                     cache.url);
+                cv.put(STOCKED,                 cache.stocked ? 1 : 0);
 
                 String selection = UUID + "='" + cache.uuid + "'";
                 if (db.update(ITEMS, cv, selection, null) == 0) {
                     db.insert(ITEMS, null, cv);
                 }
                 item.saved = true;
-
-
 
                 items.put(cache.uuid, cache);
             }

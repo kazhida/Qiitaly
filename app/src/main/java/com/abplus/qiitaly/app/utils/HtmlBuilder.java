@@ -1,7 +1,6 @@
 package com.abplus.qiitaly.app.utils;
 
 import com.abplus.qiitaly.app.api.models.Item;
-import com.abplus.qiitaly.app.api.models.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public class HtmlBuilder {
 
-    private Item item;
+    private Item.Cache item;
 
-    public HtmlBuilder(@Nullable Item item) {
+    public HtmlBuilder(@Nullable Item.Cache item) {
         this.item = item;
     }
 
@@ -26,21 +25,12 @@ public class HtmlBuilder {
         return "</body></html>";
     }
 
-    private String articleHeader(@NotNull Item item, @Nullable User user) {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("<header class=\"article-header\"><div class=\"container\">");
-        if (user != null) {
-            builder.append("<img src=\"").append(user.getProfileImageUrl()).append("\">");
-        }
-        builder.append("<div>");
-        builder.append("<h1 class=\"item-title\">").append(item.getTitle()).append("</h1>");
-        if (user != null) {
-            builder.append(user.getUrlName()).append("が").append(item.getCreatedAtInWords()).append("前に投稿");
-        }
-        builder.append("</div></header>");
-
-        return builder.toString();
+    private String articleHeader(@NotNull Item.Cache item) {
+        return "<header class=\"article-header\"><div class=\"container\">" +
+                "<img src=\"" + item.getUserProfileImageUrl() + "\">" +
+                "<div>" + "<h1 class=\"item-title\">" + item.getTitle() + "</h1>" +
+                item.getUserUrlName() + "が" + item.getCreatedAtInWords() + "前に投稿" +
+                "</div></header>";
     }
 
     public String build() {
@@ -49,7 +39,7 @@ public class HtmlBuilder {
         builder.append(header());
 
         if (item != null) {
-            builder.append(articleHeader(item, item.getUser()));
+            builder.append(articleHeader(item));
             builder.append("<div class=\"container\">");
             builder.append(item.getBody());
             builder.append("</div>");
