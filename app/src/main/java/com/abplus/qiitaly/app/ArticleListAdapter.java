@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,7 +72,7 @@ public class ArticleListAdapter extends BaseAdapter {
 
         final Item item = items.get(position);
 
-        holder.titleText.setText(item.getTitle());
+        holder.titleText.setText(Html.fromHtml(item.getTitle()));
         holder.stockCount.setText(activity.getString(R.string.stoked, item.getStockCount()));
 
         Item.Cache cache = Item.Cache.getHolder().get(item.getUuid());
