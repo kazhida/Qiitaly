@@ -47,6 +47,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
     View fragmentContainer;
 
     private static final String CURRENT_SCREEN = "CURRENT_SCREEN";
+    private static final String CURRENT_PAGE   = "CURRENT_PAGE";
     private static final int LOGIN_REQUEST_CODE = 15449;    //  適当
 
     private enum Screen {
@@ -126,6 +127,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putInt(CURRENT_SCREEN, currentScreen.ordinal());
+        editor.putInt(CURRENT_PAGE,   pager.getCurrentItem());
         editor.commit();
     }
 
@@ -186,6 +188,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
     private void setupPages() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         drawer.selectItem(preferences.getInt(CURRENT_SCREEN, 0));
+        pager.setCurrentItem(preferences.getInt(CURRENT_PAGE, 0));
     }
 
     private void setupCurrentUser() {
