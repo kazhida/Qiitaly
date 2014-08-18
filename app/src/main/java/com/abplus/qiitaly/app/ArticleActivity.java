@@ -34,6 +34,7 @@ public class ArticleActivity extends Activity {
         return intent;
     }
 
+    private String uuid;
     private Item.Cache itemCache;
 
     @Override
@@ -41,7 +42,7 @@ public class ArticleActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
 
-        String uuid = getIntent().getStringExtra(UUID);
+        uuid = getIntent().getStringExtra(UUID);
         itemCache = Item.Cache.getHolder().get(uuid);
 
         if (savedInstanceState == null) {
@@ -117,12 +118,30 @@ public class ArticleActivity extends Activity {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            if (itemCache == null) {
-                getActivity().finish();
-            } else {
+            if (itemCache != null) {
                 HtmlBuilder builder = new HtmlBuilder(itemCache);
                 webView.loadDataWithBaseURL(null, builder.build(), "text/html", "UTF-8", null);
             }
+
+            Backend.sharedInstance().item(uuid, new Backend.Callback<Item>() {
+
+                @Override
+                public void onSuccess(Item result, @Nullable String nextUrl) {
+                    HtmlBuilder builder = new HtmlBuilder(result);
+                    webView.loadDataWithBaseURL(null, builder.build(), "text/html", "UTF-8", null);
+                }
+
+                @Override
+                public void onException(Throwable throwable) {
+                    throwable.printStackTrace();
+                    Dialogs.errorMessage(ArticleActivity.this, R.string.err_response, throwable.getLocalizedMessage());
+                }
+
+                @Override
+                public void onError(String errorReason) {
+                    Dialogs.errorMessage(ArticleActivity.this, R.string.err_response, errorReason);
+                }
+            });
         }
     }
 }

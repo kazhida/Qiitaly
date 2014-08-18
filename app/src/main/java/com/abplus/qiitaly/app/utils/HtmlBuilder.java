@@ -1,5 +1,6 @@
 package com.abplus.qiitaly.app.utils;
 
+import com.abplus.qiitaly.app.api.models.Comment;
 import com.abplus.qiitaly.app.api.models.Item;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,9 +12,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public class HtmlBuilder {
 
-    private Item.Cache item;
+    private Item item;
 
-    public HtmlBuilder(@Nullable Item.Cache item) {
+    public HtmlBuilder(@Nullable Item.Cache cache) {
+        item = cache == null ? null : cache.toItem();
+    }
+
+    public HtmlBuilder(@NotNull Item item) {
         this.item = item;
     }
 
@@ -35,10 +40,22 @@ public class HtmlBuilder {
                 "  font-size: 12px;" +
                 "}\n" +
                 "img.profile-icon {" +
-                "  width: 80px;" +
-                "  height: 80px;" +
+                "  width: 64px;" +
+                "  height: 64px;" +
                 "  margin: 8px;" +
                 "" +
+                "}\n" +
+                "img.comment-icon {" +
+                "  width: 32px;" +
+                "  height: 32px;" +
+                "  margin: 8px;" +
+                "" +
+                "}\n" +
+                ".comment-body {" +
+                "  clear: left;" +
+                "  color: #333333;" +
+                "  padding: 4px;" +
+                "  font-size: 12px;" +
                 "}\n" +
                 ".article-header h1 {" +
                 "  font-size: 18px;" +
@@ -76,12 +93,18 @@ public class HtmlBuilder {
         return "</body></html>";
     }
 
-    private String articleHeader(@NotNull Item.Cache item) {
-        return "<header class=\"article-header\">" +
-                "<div><img class=\"profile-icon\" src=\"" + item.getUserProfileImageUrl() + "\" align=\"left\">" +
+    private String articleHeader(@NotNull Item item) {
+        return  "<header class=\"article-header\">" +
+                "<div><img class=\"profile-icon\" src=\"" + item.getUser().getProfileImageUrl() + "\" align=\"left\">" +
                 "<h1 class=\"item-title\">" + item.getTitle() + "</h1></div>" +
-                "<div><p class=\"article-description\">" + item.getUserUrlName() + "が" + item.getCreatedAtInWords() + "前に投稿</p></div>" +
+                "<div><p class=\"article-description\">" + item.getUser().getUrlName() + "が" + item.getCreatedAtInWords() + "前に投稿</p></div>" +
                 "</header>";
+    }
+
+    private String comment(@NotNull Comment comment) {
+        return  "<div><img class=\"comment-icon\" src=\"" + comment.getUser().getProfileImageUrl() + "\" align=\"left\">" +
+                "<p>" + comment.getUser().getUrlName() + "</p>" +
+                "<div class=\"comment-body\">" + comment.getBody() + "</div>";
     }
 
     public String build() {
@@ -94,6 +117,12 @@ public class HtmlBuilder {
             builder.append("<div class=\"container\">");
             builder.append(item.getBody());
             builder.append("</div>");
+            if (item.getComments() != null && item.getComments().size() > 0) {
+                builder.append("<hr>");
+                for (Comment comment: item.getComments()) {
+                    builder.append(comment(comment));
+                }
+            }
         }
 
         builder.append(footer());

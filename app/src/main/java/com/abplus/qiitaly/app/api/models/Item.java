@@ -3,13 +3,12 @@ package com.abplus.qiitaly.app.api.models;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import com.abplus.qiitaly.app.utils.CalendarUtil;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,20 +154,12 @@ public class Item {
             this.userProfileImageUrl = item.user.getProfileImageUrl();
             this.title               = item.title;
             this.body                = item.body;
+            this.createdAt           = CalendarUtil.parse(item.createdAt);
+            this.updatedAt           = CalendarUtil.parse(item.updatedAt);
             this.createdAtInWords    = item.createdAtInWords;
             this.updatedAtInWords    = item.updatedAtInWords;
             this.url                 = item.url;
             this.stocked             = item.stocked != null && item.stocked;
-            try {
-                this.createdAt = timeFormat.parse(item.createdAt).getTime();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            try {
-                this.updatedAt = timeFormat.parse(item.updatedAt).getTime();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         }
 
         private Cache(Cursor cursor) {
@@ -187,7 +178,22 @@ public class Item {
             stocked             = cursor.getInt(12) != 0;
         }
 
-        public static final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+        public Item toItem() {
+            Item item = new Item();
+
+            item.uuid               = this.uuid;
+            item.user               = new User(userName, userUrlName, userProfileImageUrl);
+            item.title              = this.title;
+            item.body               = this.body;
+            item.createdAt          = CalendarUtil.format(this.createdAt);
+            item.updatedAt          = CalendarUtil.format(this.updatedAt);
+            item.createdAtInWords   = this.createdAtInWords;
+            item.updatedAtInWords   = this.updatedAtInWords;
+            item.url                = this.url;
+            item.stocked            = this.stocked;
+
+            return item;
+        }
 
         public void checked(SQLiteDatabase db) {
             ContentValues cv = new ContentValues();

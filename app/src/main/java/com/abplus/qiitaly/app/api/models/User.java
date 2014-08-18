@@ -67,4 +67,12 @@ public class User {
         if (followings == null) followings = new Followings();
         followings.tags.addAll(tags);
     }
+
+    @SuppressWarnings("unused")
+    public User() {}
+    public User(String name, String urlName, String profileImageUrl) {
+        this.name = name;
+        this.urlName = urlName;
+        this.profileImageUrl = profileImageUrl;
+    }
 }
