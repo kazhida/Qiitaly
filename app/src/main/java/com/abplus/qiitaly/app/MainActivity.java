@@ -2,9 +2,7 @@ package com.abplus.qiitaly.app;
 
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -170,8 +168,13 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
     @Override
     public void onLogout() {
-        Backend.sharedInstance().logout(this);
-        startActivityForResult(new Intent(this, LoginActivity.class), LOGIN_REQUEST_CODE, null);
+        Dialogs.confirm(this, R.string.confirm, R.string.sure_logout, new Runnable() {
+            @Override
+            public void run() {
+                Backend.sharedInstance().logout(MainActivity.this);
+                startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), LOGIN_REQUEST_CODE, null);
+            }
+        });
     }
 
     @Override

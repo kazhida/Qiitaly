@@ -16,9 +16,13 @@
     <string name="close">閉じる</string>
     <string name="loading">Loading…</string>
     <string name="icon">アイコン</string>
+    <string name="ok">OK</string>
+    <string name="cancel">キャンセル</string>
+    <string name="confirm">確認</string>
 
     <string name="stock_article">ストックする</string>
     <string name="view_in_browser">ブラウザで見る</string>
+    <string name="sure_logout">ログアウトしますか？</string>
 
     <string name="home_whats_new">新着投稿</string>
     <string name="home_stocks">ストック</string>
