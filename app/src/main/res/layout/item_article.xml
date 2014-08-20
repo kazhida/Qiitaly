@@ -13,6 +13,7 @@
         >
 
     <LinearLayout
+            android:id="@+id/article_panel"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -96,6 +97,28 @@
                         />
             </LinearLayout>
         </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/loading_view"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            >
+        <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:text="@string/loading"
+                android:textSize="9pt"
+                android:textColor="#999999"
+                />
     </LinearLayout>
 
     <Button

@@ -1,7 +1,6 @@
 package com.abplus.qiitaly.app;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.text.Html;
@@ -38,6 +37,7 @@ public class ArticleListAdapter extends BaseAdapter {
     protected LayoutInflater inflater;
     protected Activity activity;
     protected String title;
+    protected boolean loading;
 
     ArticleListAdapter(Activity activity) {
         super();
@@ -47,7 +47,7 @@ public class ArticleListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return items.size();
+        return items.size() + (loading ? 1 : 0);
     }
 
     @Override
@@ -70,58 +70,66 @@ public class ArticleListAdapter extends BaseAdapter {
         }
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        final Item item = items.get(position);
+        final Item item = position < items.size() ? items.get(position) : null;
 
-        holder.titleText.setText(Html.fromHtml(item.getTitle()));
-        holder.stockCount.setText(activity.getString(R.string.stoked, item.getStockCount()));
+        if (item != null) {
+            holder.titleText.setText(Html.fromHtml(item.getTitle()));
+            holder.stockCount.setText(activity.getString(R.string.stoked, item.getStockCount()));
 
-        Item.Cache cache = Item.Cache.getHolder().get(item.getUuid());
-        if (cache == null) {
-            holder.newItem.setVisibility(View.GONE);
-            holder.updatedItem.setVisibility(View.GONE);
-        } else if (cache.isUnread()) {
-            holder.newItem.setVisibility(View.VISIBLE);
-            holder.updatedItem.setVisibility(View.GONE);
-        } else if (cache.isUpdated()) {
-            holder.newItem.setVisibility(View.GONE);
-            holder.updatedItem.setVisibility(View.VISIBLE);
-        } else {
-            holder.newItem.setVisibility(View.GONE);
-            holder.updatedItem.setVisibility(View.GONE);
-        }
+            Item.Cache cache = Item.Cache.getHolder().get(item.getUuid());
+            if (cache == null) {
+                holder.newItem.setVisibility(View.GONE);
+                holder.updatedItem.setVisibility(View.GONE);
+            } else if (cache.isUnread()) {
+                holder.newItem.setVisibility(View.VISIBLE);
+                holder.updatedItem.setVisibility(View.GONE);
+            } else if (cache.isUpdated()) {
+                holder.newItem.setVisibility(View.GONE);
+                holder.updatedItem.setVisibility(View.VISIBLE);
+            } else {
+                holder.newItem.setVisibility(View.GONE);
+                holder.updatedItem.setVisibility(View.GONE);
+            }
+            if (item.getUpdatedAt().compareTo(item.getCreatedAt()) > 0) {
+                holder.descriptionText.setText(updatedDescription(item));
+            } else {
+                holder.descriptionText.setText(postedDescription(item));
+            }
 
-        if (item.getUpdatedAt().compareTo(item.getCreatedAt()) > 0) {
-            holder.descriptionText.setText(updatedDescription(item));
-        } else {
-            holder.descriptionText.setText(postedDescription(item));
-        }
+            holder.tagLayout.removeAllViews();
+            for (Tag tag: item.getTags()) {
+                TextView textView = (TextView) inflater.inflate(R.layout.tag_text, holder.tagLayout, false);
+                textView.setText(tag.getName());
+                holder.tagLayout.addView(textView);
+            }
 
-        holder.tagLayout.removeAllViews();
-        for (Tag tag: item.getTags()) {
-            TextView textView = (TextView) inflater.inflate(R.layout.tag_text, holder.tagLayout, false);
-            textView.setText(tag.getName());
-            holder.tagLayout.addView(textView);
-        }
+            ImageLoader.getInstance().displayImage(item.getUser().getProfileImageUrl(), holder.iconImage);
 
-        ImageLoader.getInstance().displayImage(item.getUser().getProfileImageUrl(), holder.iconImage);
-
-        if (item.getNextUrl() == null) {
+            if (item.getNextUrl() == null || loading) {
+                holder.moreButton.setVisibility(View.GONE);
+                holder.moreButton.setOnClickListener(null);
+            } else {
+                holder.moreButton.setVisibility(View.VISIBLE);
+                holder.moreButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(@NotNull View v) {
+                        readMore(position, item.getNextUrl());
+                    }
+                });
+            }
+            holder.articlePanel.setVisibility(View.VISIBLE);
+            holder.loadingView.setVisibility(View.GONE);
+        } else  {
+            holder.articlePanel.setVisibility(View.GONE);
             holder.moreButton.setVisibility(View.GONE);
-            holder.moreButton.setOnClickListener(null);
-        } else {
-            holder.moreButton.setVisibility(View.VISIBLE);
-            holder.moreButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(@NotNull View v) {
-                    readMore(position, item.getNextUrl());
-                }
-            });
+            holder.loadingView.setVisibility(View.VISIBLE);
         }
+
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NotNull View v) {
-                if (item.isSaved()) {
+                if (item != null && item.isSaved()) {
                     DatabaseHelper.sharedInstance().executeWrite(new DatabaseHelper.Writer() {
                         @Override
                         public void onWrite(@NotNull SQLiteDatabase db) {
@@ -162,6 +170,10 @@ public class ArticleListAdapter extends BaseAdapter {
         View newItem;
         @InjectView(R.id.updated_item)
         View updatedItem;
+        @InjectView(R.id.loading_view)
+        View loadingView;
+        @InjectView(R.id.article_panel)
+        View articlePanel;
 
         ViewHolder(View view) {
             ButterKnife.inject(this, view);
@@ -175,6 +187,8 @@ public class ArticleListAdapter extends BaseAdapter {
     public void reload(final Runnable runnable) {
         items.clear();
 
+        setLoading(true);
+
         load(new Backend.Callback<List<Item>>() {
             @Override
             public void onSuccess(List<Item> result, @Nullable String nextUrl) {
@@ -187,12 +201,13 @@ public class ArticleListAdapter extends BaseAdapter {
                     runnable.run();
                 }
                 save(result);
-                notifyDataSetChanged();
+                setLoading(false);
             }
 
             @Override
             public void onException(Throwable throwable) {
                 throwable.printStackTrace();
+                setLoading(false);
                 if (runnable != null) {
                     runnable.run();
                 }
@@ -201,6 +216,7 @@ public class ArticleListAdapter extends BaseAdapter {
 
             @Override
             public void onError(String errorReason) {
+                setLoading(false);
                 if (runnable != null) {
                     runnable.run();
                 }
@@ -211,7 +227,7 @@ public class ArticleListAdapter extends BaseAdapter {
 
     public void readMore(final int position, String nextUrl) {
 
-        final ProgressDialog dialog = Dialogs.startLoading(activity);
+        setLoading(true);
 
         Backend.sharedInstance().moreItems(nextUrl, new Backend.Callback<List<Item>>() {
             @Override
@@ -239,20 +255,19 @@ public class ArticleListAdapter extends BaseAdapter {
                     save(result);
                     items.addAll(result);
                 }
-                dialog.dismiss();
-                notifyDataSetChanged();
+                setLoading(false);
             }
 
             @Override
             public void onException(Throwable throwable) {
-                dialog.dismiss();
                 throwable.printStackTrace();
+                setLoading(false);
                 Dialogs.errorMessage(activity, R.string.err_response, throwable.getLocalizedMessage());
             }
 
             @Override
             public void onError(String errorReason) {
-                dialog.dismiss();
+                setLoading(false);
                 Dialogs.errorMessage(activity, R.string.err_response, errorReason);
             }
         });
@@ -279,6 +294,11 @@ public class ArticleListAdapter extends BaseAdapter {
                 notifyDataSetChanged();
             }
         }.execute();
+    }
+
+    private void setLoading(boolean loading) {
+        this.loading = loading;
+        notifyDataSetChanged();
     }
 
     public static class ForWhatsNew extends ArticleListAdapter {

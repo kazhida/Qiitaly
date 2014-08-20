@@ -35,6 +35,7 @@
     <string name="read_more">もっと読む…</string>
     <string name="new_item">New!</string>
     <string name="updated_item">Updated!</string>
+    <string name="no_article">投稿がありません。</string>
 
     <string name="err_login">ログイン失敗</string>
     <string name="err_response">通信失敗</string>
