@@ -33,6 +33,7 @@ public class HtmlBuilder {
                 "  line-height: 1.5;" +
                 "  padding: 0px;" +
                 "  margin: 0px;" +
+                "  background-color: #fff;" +
                 "}\n" +
                 ".container {" +
                 "  padding: 8px;" +
@@ -58,18 +59,6 @@ public class HtmlBuilder {
                 "  height: 64px;" +
                 "  margin: 8px;" +
                 "" +
-                "}\n" +
-                "img.comment-icon {" +
-                "  width: 32px;" +
-                "  height: 32px;" +
-                "  margin: 8px;" +
-                "" +
-                "}\n" +
-                ".comment-body {" +
-                "  clear: left;" +
-                "  color: #333333;" +
-                "  padding: 4px;" +
-                "  font-size: 12px;" +
                 "}\n" +
                 ".article-header h1 {" +
                 "  font-size: 18px;" +
@@ -129,6 +118,41 @@ public class HtmlBuilder {
                 ".code-frame .cm {" +
                 "  color: #CC6699;" +
                 "}\n" +
+                ".comment-table {" +
+                "  border-spacing: 0;" +
+                "}\n" +
+                ".comment-row {" +
+                "  padding: 8px;" +
+                "}\n" +
+                ".comment-contents {" +
+                "  margin: 8px;" +
+                "  padding: 8px;" +
+                "  background-color: #EEF2EA;" +
+                "}\n" +
+                "img.comment-icon {" +
+                "  width: 32px;" +
+                "  height: 32px;" +
+                "  margin: 8px;" +
+                "" +
+                "}\n" +
+                ".comment-name {" +
+                "  clear: left;" +
+                "  color: #333333;" +
+                "  padding: 4px;" +
+                "  margin: 0;" +
+                "  font-size: 12px;" +
+                "}\n" +
+                ".comment-body {" +
+                "  clear: left;" +
+                "  color: #333333;" +
+                "  background-color: #ffffff;" +
+                "  padding: 4px;" +
+                "  margin-top: 2px;" +
+                "  margin-left: 0;" +
+                "  margin-right: 0;" +
+                "  margin-bottom: 4px;" +
+                "  font-size: 12px;" +
+                "}\n" +
                 "</style>" +
                 "</head>";
     }
@@ -146,9 +170,10 @@ public class HtmlBuilder {
     }
 
     private String comment(@NotNull Comment comment) {
-        return  "<div><img class=\"comment-icon\" src=\"" + comment.getUser().getProfileImageUrl() + "\" align=\"left\">" +
-                "<p>" + comment.getUser().getUrlName() + "</p>" +
-                "<div class=\"comment-body\">" + comment.getBody() + "</div>";
+        return  "<tr class=\"comment-row\"><td>" +
+                "<img class=\"comment-icon\" src=\"" + comment.getUser().getProfileImageUrl() + "\" align=\"left\"></td>" +
+                "<td><div class=\"comment-contents\"><div class=\"comment-name\">" + comment.getUser().getUrlName() + "</div>" +
+                "<div class=\"comment-body\">" + comment.getBody() + "</div></div></td>";
     }
 
     public String build() {
@@ -163,9 +188,11 @@ public class HtmlBuilder {
             builder.append("</div>");
             if (item.getComments() != null && item.getComments().size() > 0) {
                 builder.append("<hr>");
+                builder.append("<table class=\"comment-table\">");
                 for (Comment comment: item.getComments()) {
                     builder.append(comment(comment));
                 }
+                builder.append("</table>");
             }
         }
 
