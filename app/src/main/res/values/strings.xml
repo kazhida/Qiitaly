@@ -2,9 +2,9 @@
 <resources>
 
     <string name="app_name">きぃたり</string>
-    <string name="title_section1">ホーム</string>
-    <string name="title_section2">フォローしているユーザ</string>
-    <string name="title_section3">フォローしているタグ</string>
+    <string name="title_home">ホーム</string>
+    <string name="title_users">フォローしているユーザ</string>
+    <string name="title_tags">フォローしているタグ</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

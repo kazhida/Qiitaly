@@ -3,6 +3,7 @@ package com.abplus.qiitaly.app.utils;
 import android.util.Log;
 import com.abplus.qiitaly.app.api.models.Comment;
 import com.abplus.qiitaly.app.api.models.Item;
+import com.abplus.qiitaly.app.api.models.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,10 +42,10 @@ public class HtmlBuilder {
                 ".article-header {" +
                 "   width: 100%;" +
                 "   background-color: #EEF2EA;" +
-                "   padding: 0px;" +
-                "   margin-top: 0px;" +
-                "   margin-left: 0px;" +
-                "   margin-right: 0px;" +
+                "   padding: 4px 0 0;" +
+                "   margin-top: 0;" +
+                "   margin-left: 0;" +
+                "   margin-right: 0;" +
                 "   margin-bottom: 8px;" +
                 "}\n" +
                 ".article-description {" +
@@ -153,6 +154,26 @@ public class HtmlBuilder {
                 "  margin-bottom: 4px;" +
                 "  font-size: 12px;" +
                 "}\n" +
+                ".tag {" +
+                "  background: #ccc;" +
+                "  padding: 4px;" +
+                "  margin-left: 8px;" +
+                "  position: relative;" +
+                "}\n" +
+                ".tag:after {" +
+                "  right: 100%;" +
+                "  top: 50%;" +
+                "  border: solid transparent;" +
+                "  content: \" \"" +
+                "  height: 0;" +
+                "  width: 0;" +
+                "  position: absolute;" +
+                "  pointer-event: none;" +
+                "  border-color: rgba(204, 204, 204, 0);" +
+                "  border-right-color: #999;" +
+                "  border-width: 4px;" +
+                "  margin-top: -4px;" +
+                "}\n" +
                 "</style>" +
                 "</head>";
     }
@@ -162,11 +183,29 @@ public class HtmlBuilder {
     }
 
     private String articleHeader(@NotNull Item item) {
-        return  "<header class=\"article-header\">" +
-                "<div><img class=\"profile-icon\" src=\"" + item.getUser().getProfileImageUrl() + "\" align=\"left\">" +
-                "<h1 class=\"item-title\">" + item.getTitle() + "</h1></div>" +
-                "<div><p class=\"article-description\">" + item.getUser().getUrlName() + "が" + item.getCreatedAtInWords() + "前に投稿</p></div>" +
-                "</header>";
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("<header class=\"article-header\">");
+        builder.append("<div><img class=\"profile-icon\" src=\"");
+        builder.append(item.getUser().getProfileImageUrl()).append("\" align=\"left\">");
+        builder.append("<h1 class=\"item-title\">").append(item.getTitle()).append("</h1></div>");
+
+        if (item.getTags() != null && item.getTags().size() > 0) {
+            builder.append("<div><p>");
+            for (Tag tag: item.getTags()) {
+                builder.append("<span class=\"tag\">");
+                builder.append(tag.getName());
+                builder.append("</span>");
+            }
+            builder.append("</p></div>");
+        }
+
+        builder.append("<div><p class=\"article-description\">");
+        builder.append(item.getUser().getUrlName()).append("が");
+        builder.append(item.getCreatedAtInWords()).append("前に投稿</p></div>");
+        builder.append("</header>");
+
+        return builder.toString();
     }
 
     private String comment(@NotNull Comment comment) {

@@ -69,7 +69,6 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
         ActionBar actionBar = getActionBar();
         assert actionBar != null;
-        actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
@@ -150,18 +149,21 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
                 if (adapters[currentScreen.ordinal()] == null) {
                     adapters[currentScreen.ordinal()] = ListPagerAdapter.forUsers(this, getSupportFragmentManager());
                 }
+                setTitle(R.string.title_users);
                 break;
             case Tags:
                 currentScreen = Screen.Tags;
                 if (adapters[currentScreen.ordinal()] == null) {
                     adapters[currentScreen.ordinal()] = ListPagerAdapter.forTags(this, getSupportFragmentManager());
                 }
+                setTitle(R.string.title_tags);
                 break;
             default:
                 currentScreen = Screen.Home;
                 if (adapters[currentScreen.ordinal()] == null) {
                     adapters[currentScreen.ordinal()] = ListPagerAdapter.forHome(this, getSupportFragmentManager());
                 }
+                setTitle(R.string.title_home);
                 break;
         }
         pager.setAdapter(adapters[currentScreen.ordinal()]);
