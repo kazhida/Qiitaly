@@ -1,6 +1,7 @@
 package com.abplus.qiitaly.app;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
@@ -45,6 +46,11 @@ public class ArticleActivity extends Activity {
         uuid = getIntent().getStringExtra(UUID);
         itemCache = Item.Cache.getHolder().get(uuid);
 
+        ActionBar actionBar = getActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container, new ArticleFragment())
@@ -62,6 +68,9 @@ public class ArticleActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
             case R.id.action_stock:
                 stock(itemCache.getUuid());
                 return true;

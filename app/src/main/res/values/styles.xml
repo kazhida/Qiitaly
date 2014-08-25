@@ -5,8 +5,14 @@
         <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>
     </style>
 
-    <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
+    <style name="ActionBarStyle" parent="android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">@color/bg_actionbar</item>
+        <item name="android:titleTextStyle">@style/titleTextStyle</item>
+    </style>
+
+    <style name="titleTextStyle" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textStyle">italic</item>
     </style>
 
     <style name="CustomTitlePageIndicator">

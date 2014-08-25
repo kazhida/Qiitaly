@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -47,12 +48,11 @@ public class SearchResultActivity extends Activity {
 
         ActionBar actionBar = getActionBar();
         assert actionBar != null;
-        actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
 
         adapter = new ArticleListAdapter.BySearch(this, query);
 
+        setTitle(getString(R.string.search_result_title, query));
         titleText.setText(getString(R.string.search_result_for, query));
         listView.setAdapter(adapter);
 
@@ -78,6 +78,7 @@ public class SearchResultActivity extends Activity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(final String query) {
+                setTitle(getString(R.string.search_result_title, query));
                 titleText.setText(getString(R.string.search_result_for, query));
 
                 final ProgressDialog dialog = Dialogs.startLoading(SearchResultActivity.this);
@@ -99,4 +100,14 @@ public class SearchResultActivity extends Activity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }
