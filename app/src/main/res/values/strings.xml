@@ -7,6 +7,8 @@
     <string name="title_tags">フォローしているタグ</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="login_description_1">ユーザ名は、Qiitaのユーザ設定ページ\nhttps://qiita.com/settings/account\nで確認することができます。</string>
+    <string name="login_description_2">GitHubやTwitterのアカウントで登録した場合は、Qiita用のユーザ名が自動的に割り当てられているので、一度、確認してみてください。</string>
 
     <string name="user_name">ユーザ名</string>
     <string name="password">パスワード</string>

@@ -34,7 +34,7 @@ public class HtmlBuilder {
                 "  line-height: 1.5;" +
                 "  padding: 0px;" +
                 "  margin: 0px;" +
-                "  background-color: #fff;" +
+                "  background-color: #FFFEF2;" +
                 "}\n" +
                 ".container {" +
                 "  padding: 8px;" +
@@ -69,7 +69,7 @@ public class HtmlBuilder {
                 "  line-height: 1.2;" +
                 "}\n" +
                 "h1 {" +
-                "  font-size: 24px;" +
+                "  font-size: 20px;" +
                 "  font-weight: 600;" +
                 "  border-radius: 4px;" +
                 "  background-color: rgba(0, 0, 0, 0.1);" +
@@ -77,7 +77,7 @@ public class HtmlBuilder {
                 "  line-height: 1.2;" +
                 "}\n" +
                 "h2 {" +
-                "  font-size: 22px;" +
+                "  font-size: 18px;" +
                 "  border-bottom-width: 1px;" +
                 "  border-bottom-style: solid;" +
                 "  border-bottom-color: #D4D4D4;" +
@@ -85,12 +85,12 @@ public class HtmlBuilder {
                 "  line-height: 1.2;" +
                 "}\n" +
                 "h3 {" +
-                "  font-size: 18px;" +
+                "  font-size: 16px;" +
                 "  font-weight: 600;" +
                 "  line-height: 1.2;" +
                 "}\n" +
                 "h4 {" +
-                "  font-size: 16px;" +
+                "  font-size: 14px;" +
                 "  font-weight: 600;" +
                 "  line-height: 1.2;" +
                 "}\n" +
@@ -156,12 +156,12 @@ public class HtmlBuilder {
                 "}\n" +
                 ".tag {" +
                 "  background: #ccc;" +
-                "  padding: 4px;" +
+//                "  padding: 4px;" +
                 "  margin-left: 8px;" +
                 "  position: relative;" +
                 "}\n" +
                 ".tag:after {" +
-                "  right: 100%;" +
+                "  left: 100%;" +
                 "  top: 50%;" +
                 "  border: solid transparent;" +
                 "  content: \" \"" +
@@ -170,7 +170,7 @@ public class HtmlBuilder {
                 "  position: absolute;" +
                 "  pointer-event: none;" +
                 "  border-color: rgba(204, 204, 204, 0);" +
-                "  border-right-color: #999;" +
+                "  border-right-color: #ccc;" +
                 "  border-width: 4px;" +
                 "  margin-top: -4px;" +
                 "}\n" +
