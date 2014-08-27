@@ -10,12 +10,13 @@
 	<string>104f8b8798002207eebbbee810c02306c5ce85c9</string>
 	<key>fonts</key>
 	<array>
+		<string>AmericanTypewriter</string>
 		<string>TimesNewRomanPS-BoldItalicMT</string>
 		<string>rounded-l-mplus-1c-heavy</string>
 		<string>rounded-l-mplus-1c-bold</string>
 	</array>
 	<key>length</key>
-	<integer>787486</integer>
+	<integer>788823</integer>
 	<key>version</key>
 	<integer>37</integer>
 </dict>
