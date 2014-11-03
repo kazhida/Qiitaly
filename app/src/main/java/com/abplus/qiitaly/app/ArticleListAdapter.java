@@ -37,7 +37,10 @@ public class ArticleListAdapter extends BaseAdapter {
     protected LayoutInflater inflater;
     protected Activity activity;
     protected String title;
-    protected boolean loading;
+    @Getter
+    protected String nextUrl;
+    @Getter
+    protected int rateLimitRemain = Backend.RATE_LIMIT;
 
     ArticleListAdapter(Activity activity) {
         super();
@@ -47,7 +50,7 @@ public class ArticleListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return items.size() + (loading ? 1 : 0);
+        return items.size();
     }
 
     @Override
@@ -70,66 +73,44 @@ public class ArticleListAdapter extends BaseAdapter {
         }
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        final Item item = position < items.size() ? items.get(position) : null;
+        final Item item = items.get(position);
 
-        if (item != null) {
-            holder.titleText.setText(Html.fromHtml(item.getTitle()));
-            holder.stockCount.setText(activity.getString(R.string.stoked, item.getStockCount()));
+        holder.titleText.setText(Html.fromHtml(item.getTitle()));
+        holder.stockCount.setText(activity.getString(R.string.stoked, item.getStockCount()));
 
-            Item.Cache cache = Item.Cache.getHolder().get(item.getUuid());
-            if (cache == null) {
-                holder.newItem.setVisibility(View.GONE);
-                holder.updatedItem.setVisibility(View.GONE);
-            } else if (cache.isUnread()) {
-                holder.newItem.setVisibility(View.VISIBLE);
-                holder.updatedItem.setVisibility(View.GONE);
-            } else if (cache.isUpdated()) {
-                holder.newItem.setVisibility(View.GONE);
-                holder.updatedItem.setVisibility(View.VISIBLE);
-            } else {
-                holder.newItem.setVisibility(View.GONE);
-                holder.updatedItem.setVisibility(View.GONE);
-            }
-            if (item.getUpdatedAt().compareTo(item.getCreatedAt()) > 0) {
-                holder.descriptionText.setText(updatedDescription(item));
-            } else {
-                holder.descriptionText.setText(postedDescription(item));
-            }
-
-            holder.tagLayout.removeAllViews();
-            for (Tag tag: item.getTags()) {
-                TextView textView = (TextView) inflater.inflate(R.layout.tag_text, holder.tagLayout, false);
-                textView.setText(tag.getName());
-                holder.tagLayout.addView(textView);
-            }
-
-            ImageLoader.getInstance().displayImage(item.getUser().getProfileImageUrl(), holder.iconImage);
-
-            if (item.getNextUrl() == null || loading) {
-                holder.moreButton.setVisibility(View.GONE);
-                holder.moreButton.setOnClickListener(null);
-            } else {
-                holder.moreButton.setVisibility(View.VISIBLE);
-                holder.moreButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(@NotNull View v) {
-                        readMore(position, item.getNextUrl());
-                    }
-                });
-            }
-            holder.articlePanel.setVisibility(View.VISIBLE);
-            holder.loadingView.setVisibility(View.GONE);
-        } else  {
-            holder.articlePanel.setVisibility(View.GONE);
-            holder.moreButton.setVisibility(View.GONE);
-            holder.loadingView.setVisibility(View.VISIBLE);
+        Item.Cache cache = Item.Cache.getHolder().get(item.getUuid());
+        if (cache == null) {
+            holder.newItem.setVisibility(View.GONE);
+            holder.updatedItem.setVisibility(View.GONE);
+        } else if (cache.isUnread()) {
+            holder.newItem.setVisibility(View.VISIBLE);
+            holder.updatedItem.setVisibility(View.GONE);
+        } else if (cache.isUpdated()) {
+            holder.newItem.setVisibility(View.GONE);
+            holder.updatedItem.setVisibility(View.VISIBLE);
+        } else {
+            holder.newItem.setVisibility(View.GONE);
+            holder.updatedItem.setVisibility(View.GONE);
+        }
+        if (item.getUpdatedAt().compareTo(item.getCreatedAt()) > 0) {
+            holder.descriptionText.setText(updatedDescription(item));
+        } else {
+            holder.descriptionText.setText(postedDescription(item));
         }
 
+        holder.tagLayout.removeAllViews();
+        for (Tag tag: item.getTags()) {
+            TextView textView = (TextView) inflater.inflate(R.layout.tag_text, holder.tagLayout, false);
+            textView.setText(tag.getName());
+            holder.tagLayout.addView(textView);
+        }
+
+        ImageLoader.getInstance().displayImage(item.getUser().getProfileImageUrl(), holder.iconImage);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NotNull View v) {
-                if (item != null && item.isSaved()) {
+                if (item.isSaved()) {
                     DatabaseHelper.sharedInstance().executeWrite(new DatabaseHelper.Writer() {
                         @Override
                         public void onWrite(@NotNull SQLiteDatabase db) {
@@ -164,16 +145,10 @@ public class ArticleListAdapter extends BaseAdapter {
         TextView stockCount;
         @InjectView(R.id.tag_layout)
         ViewGroup tagLayout;
-        @InjectView(R.id.more_button)
-        View moreButton;
         @InjectView(R.id.new_item)
         View newItem;
         @InjectView(R.id.updated_item)
         View updatedItem;
-        @InjectView(R.id.loading_view)
-        View loadingView;
-        @InjectView(R.id.article_panel)
-        View articlePanel;
 
         ViewHolder(View view) {
             ButterKnife.inject(this, view);
@@ -186,28 +161,22 @@ public class ArticleListAdapter extends BaseAdapter {
 
     public void reload(final Runnable runnable) {
         items.clear();
-
-        setLoading(true);
-
         load(new Backend.Callback<List<Item>>() {
             @Override
-            public void onSuccess(List<Item> result, @Nullable String nextUrl) {
+            public void onSuccess(List<Item> result, @Nullable String nextUrl, int rateLimitRemain) {
                 items.clear();
                 items.addAll(result);
-                if (items.size() > 0) {
-                    items.get(items.size() - 1).setNextUrl(nextUrl);
-                }
+                ArticleListAdapter.this.nextUrl = nextUrl;
+                ArticleListAdapter.this.rateLimitRemain = rateLimitRemain;
                 if (runnable != null) {
                     runnable.run();
                 }
                 save(result);
-                setLoading(false);
             }
 
             @Override
             public void onException(Throwable throwable) {
                 throwable.printStackTrace();
-                setLoading(false);
                 if (runnable != null) {
                     runnable.run();
                 }
@@ -216,7 +185,6 @@ public class ArticleListAdapter extends BaseAdapter {
 
             @Override
             public void onError(String errorReason) {
-                setLoading(false);
                 if (runnable != null) {
                     runnable.run();
                 }
@@ -225,52 +193,46 @@ public class ArticleListAdapter extends BaseAdapter {
         });
     }
 
-    public void readMore(final int position, String nextUrl) {
-
-        setLoading(true);
-
-        Backend.sharedInstance().moreItems(nextUrl, new Backend.Callback<List<Item>>() {
-            @Override
-            public void onSuccess(List<Item> result, @Nullable String nextUrl) {
-                items.get(position).setNextUrl(null);
-
-                if (position < items.size() - 1) {
-                    Item next = items.get(position + 1);
+    public void readMore(final Runnable runnable) {
+        if (nextUrl != null) {
+            Backend.sharedInstance().moreItems(nextUrl, new Backend.Callback<List<Item>>() {
+                @Override
+                public void onSuccess(List<Item> result, @Nullable String nextUrl, int rateLimitRemain) {
                     List<Item> additional = new ArrayList<>();
-                    for (Item item : result) {
-                        if (item.getUuid().equals(next.getUuid())) break;
-                        additional.add(item);
-                    }
-                    if (result.size() == additional.size() && additional.size() > 0) {
-                        Item last = additional.get(additional.size() - 1);
-                        last.setNextUrl(nextUrl);
+                    for (Item item: result) {
+                        if (! include(item)) {
+                            items.add(item);
+                            additional.add(item);
+                        }
                     }
                     save(additional);
-                    items.addAll(position + 1, additional);
-                } else {
-                    if (result.size() > 0) {
-                        Item last = result.get(result.size() - 1);
-                        last.setNextUrl(nextUrl);
+                    ArticleListAdapter.this.nextUrl = nextUrl;
+                    ArticleListAdapter.this.rateLimitRemain = rateLimitRemain;
+                    if (runnable != null) {
+                        runnable.run();
                     }
-                    save(result);
-                    items.addAll(result);
                 }
-                setLoading(false);
-            }
 
-            @Override
-            public void onException(Throwable throwable) {
-                throwable.printStackTrace();
-                setLoading(false);
-                Dialogs.errorMessage(activity, R.string.err_response, throwable.getLocalizedMessage());
-            }
+                @Override
+                public void onException(Throwable throwable) {
+                    throwable.printStackTrace();
+                    Dialogs.errorMessage(activity, R.string.err_response, throwable.getLocalizedMessage());
+                    if (runnable != null) {
+                        runnable.run();
+                    }
+                }
 
-            @Override
-            public void onError(String errorReason) {
-                setLoading(false);
-                Dialogs.errorMessage(activity, R.string.err_response, errorReason);
-            }
-        });
+                @Override
+                public void onError(String errorReason) {
+                    Dialogs.errorMessage(activity, R.string.err_response, errorReason);
+                    if (runnable != null) {
+                        runnable.run();
+                    }
+                }
+            });
+        } else if (runnable != null) {
+            runnable.run();
+        }
     }
 
     private void save(final List<Item> items) {
@@ -291,14 +253,18 @@ public class ArticleListAdapter extends BaseAdapter {
 
             @Override
             protected void onPostExecute(@NotNull Void result) {
+//                loading = false;
                 notifyDataSetChanged();
             }
         }.execute();
     }
 
-    private void setLoading(boolean loading) {
-        this.loading = loading;
-        notifyDataSetChanged();
+    private boolean include(Item item) {
+        for (Item item0: items) {
+            if (item0.getUuid().equals(item.getUuid())) return true;
+        }
+
+        return false;
     }
 
     public static class ForWhatsNew extends ArticleListAdapter {

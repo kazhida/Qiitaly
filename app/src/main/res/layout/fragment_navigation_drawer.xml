@@ -17,7 +17,6 @@
             android:divider="@android:color/transparent"
             android:dividerHeight="0dp"
             />
-
     <Button
             android:id="@+id/logout_button"
             android:layout_width="match_parent"

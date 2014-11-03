@@ -11,9 +11,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.*;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.*;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.SearchView;
@@ -49,6 +50,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
     private static final String CURRENT_SCREEN = "CURRENT_SCREEN";
     private static final String CURRENT_PAGE   = "CURRENT_PAGE";
     private static final int LOGIN_REQUEST_CODE = 15449;    //  適当
+    private static final int MEMORY_CACHE_SIZE = 8 * 1024 * 1024;
 
     private enum Screen {
         Home,
@@ -85,7 +87,6 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
         drawerToggle = new ActionBarDrawerToggle(
                 this,
                 drawerLayout,
-                R.drawable.ic_drawer,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close
         );
@@ -103,7 +104,21 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
         Backend.sharedInstance().restoreAuth(this);
 
-        initImageLoader();
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .considerExifParams(true)
+                .build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                .memoryCache(new LruMemoryCache(MEMORY_CACHE_SIZE))
+                .memoryCacheSize(MEMORY_CACHE_SIZE)
+                .diskCacheFileCount(200)
+                .taskExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+                .taskExecutorForCachedImages(AsyncTask.THREAD_POOL_EXECUTOR)
+                .defaultDisplayImageOptions(options)
+                .build();
+        ImageLoader.getInstance().init(config);
     }
 
     @Override
@@ -167,6 +182,7 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
                 break;
         }
         pager.setAdapter(adapters[currentScreen.ordinal()]);
+        pager.setOffscreenPageLimit(adapters[currentScreen.ordinal()].getCount() - 1);
         drawerLayout.closeDrawer(fragmentContainer);
     }
 
@@ -198,17 +214,17 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
 
         Backend.sharedInstance().user(new ApiCallback<User>(getActivity(), dialog) {
             @Override
-            public void onSuccess(final User user, String nextUrl) {
+            public void onSuccess(final User user, String nextUrl, int rateLimitRemain) {
+
                 Backend.sharedInstance().usersFollowingUsers(user.getUrlName(), new ApiCallback<List<User>>(getActivity(), dialog) {
                     @Override
-                    public void onSuccess(List<User> users, String nextUrl) {
+                    public void onSuccess(List<User> users, String nextUrl, int rateLimitRemain) {
                         user.addFollowingUsers(users);
 
                         Backend.sharedInstance().usersFollowingTags(user.getUrlName(), new ApiCallback<List<Tag>>(getActivity(), dialog) {
                             @Override
-                            public void onSuccess(List<Tag> tags, String nextUrl) {
+                            public void onSuccess(List<Tag> tags, String nextUrl, int rateLimitRemain) {
                                 user.addFollowingTags(tags);
-
                                 dialog.dismiss();
                                 setupPages();
                             }
@@ -271,25 +287,5 @@ public class MainActivity extends FragmentActivity implements NavigationDrawerFr
             dialog.dismiss();
             Dialogs.errorMessage(context, R.string.err_response, errorReason);
         }
-    }
-
-    private static final int MEMORY_CACHE_SIZE = 8 * 1024 * 1024;
-
-    private void initImageLoader() {
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .considerExifParams(true)
-                .build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                .memoryCache(new LruMemoryCache(MEMORY_CACHE_SIZE))
-                .memoryCacheSize(MEMORY_CACHE_SIZE)
-                .diskCacheFileCount(200)
-                .taskExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-                .taskExecutorForCachedImages(AsyncTask.THREAD_POOL_EXECUTOR)
-                .defaultDisplayImageOptions(options)
-                .build();
-        ImageLoader.getInstance().init(config);
     }
 }

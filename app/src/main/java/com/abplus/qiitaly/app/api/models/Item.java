@@ -7,7 +7,6 @@ import com.abplus.qiitaly.app.utils.CalendarUtil;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +19,7 @@ import java.util.Map;
  */
 public class Item {
     @Getter @Expose @SuppressWarnings("unused")
-    private Integer id;
+    private Long id;
     @Getter @Expose @SuppressWarnings("unused")
     private String uuid;
     @Getter @Expose @SuppressWarnings("unused")
@@ -59,8 +58,6 @@ public class Item {
     private List<Comment> comments;
 
     //  ここから下は、APIのレスポンスにはない
-    @Getter @Setter @SuppressWarnings("unused")
-    private String nextUrl;
     @Getter @SuppressWarnings("unused")
     private boolean saved;
 

@@ -26,8 +26,10 @@ public class Backend {
     private static final String KEY_TOKEN    = "KEY_TOKEN";
     private static final String KEY_URL_NAME = "KEY_URL_NAME";
 
+    public static final int RATE_LIMIT = 150;
+
     public interface Callback<T> {
-        void onSuccess(T result, @Nullable String nextUrl);
+        void onSuccess(T result, @Nullable String nextUrl, int rateLimitRemain);
         void onException(Throwable throwable);
         void onError(String errorReason);
     }

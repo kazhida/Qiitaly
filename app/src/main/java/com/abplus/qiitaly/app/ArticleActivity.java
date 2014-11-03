@@ -92,7 +92,7 @@ public class ArticleActivity extends Activity {
         final ProgressDialog dialog = Dialogs.startLoading(this);
         Backend.sharedInstance().stock(uuid, new Backend.Callback<String>() {
             @Override
-            public void onSuccess(String result, @Nullable String nextUrl) {
+            public void onSuccess(String result, @Nullable String nextUrl, int rateLimitRemain) {
                 dialog.dismiss();
             }
 
@@ -135,7 +135,7 @@ public class ArticleActivity extends Activity {
             Backend.sharedInstance().item(uuid, new Backend.Callback<Item>() {
 
                 @Override
-                public void onSuccess(Item result, @Nullable String nextUrl) {
+                public void onSuccess(Item result, @Nullable String nextUrl, int rateLimitRemain) {
                     HtmlBuilder builder = new HtmlBuilder(result);
                     webView.loadDataWithBaseURL(null, builder.build(), "text/html", "UTF-8", null);
                 }

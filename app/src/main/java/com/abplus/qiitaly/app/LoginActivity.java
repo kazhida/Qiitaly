@@ -45,15 +45,11 @@ public class LoginActivity extends Activity {
 
     private String getEditText(EditText editText) {
         String s = editText.getText().toString();
-        if (s == null) {
+        s = s.trim();
+        if (s.length() == 0) {
             return null;
         } else {
-            s = s.trim();
-            if (s.length() == 0) {
-                return null;
-            } else {
-                return s;
-            }
+            return s;
         }
     }
 
@@ -71,7 +67,7 @@ public class LoginActivity extends Activity {
 
             Backend.sharedInstance().auth(this, userName, password, new Backend.Callback<Auth>() {
                 @Override
-                public void onSuccess(Auth auth, String nextUrl) {
+                public void onSuccess(Auth auth, String nextUrl, int rateLimitRemain) {
                     dialog.dismiss();
                     setResult(Activity.RESULT_OK);
                     finish();

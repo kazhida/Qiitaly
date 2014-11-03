@@ -3,6 +3,7 @@ package com.abplus.qiitaly.app.api;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
 import com.abplus.qiitaly.app.api.models.Auth;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
@@ -46,6 +47,7 @@ class Executor<T> {
     private Uri.Builder builder;
     private Backend.EntityEvaluator<T> evaluator;
     private Header linkHeader;
+    private Header remainHeader;
 
     public Executor(@NotNull String path, @Nullable Auth auth, @NotNull Backend.EntityEvaluator<T> evaluator) {
         builder = new Uri.Builder();
@@ -55,7 +57,6 @@ class Executor<T> {
         if (! path.endsWith("/"))   path = path + "/";
         builder.path(PATH + path);
         if (auth != null) {
-//            builder.appendQueryParameter("token", auth.getToken());
             params.put("token", auth.getToken());
         }
         this.evaluator = evaluator;
@@ -155,6 +156,7 @@ class Executor<T> {
                 int statusCode = httpResponse.getStatusLine().getStatusCode();
                 String entity = httpResponse.getEntity() == null ? null : EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
                 linkHeader = httpResponse.getFirstHeader("Link");
+                remainHeader = httpResponse.getFirstHeader("X-RateLimit-Remaining");
                 switch (statusCode) {
                     case HttpStatus.SC_OK:
                         return entity;
@@ -190,12 +192,27 @@ class Executor<T> {
                 if (postProcess != null) {
                     postProcess.onPostProcess(result);
                 }
+
                 if (linkHeader == null) {
-                    callback.onSuccess(result, null);
+                    callback.onSuccess(result, null, rateLimitRemain());
                 } else {
                     //  Linkヘッダの内容を意図通りに解釈してくれないので、自前で実装する
                     Map<String, String> elements = getLinks(linkHeader.getValue());
-                    callback.onSuccess(result, elements.get("next"));
+                    callback.onSuccess(result, elements.get("next"), rateLimitRemain());
+                }
+            }
+        }
+
+        private int rateLimitRemain() {
+            if (remainHeader == null) {
+                return Backend.RATE_LIMIT;
+            } else {
+                String remain = remainHeader.getValue();
+                try {
+                    return Integer.parseInt(remain);
+                } catch (NumberFormatException e) {
+                    Log.e("rateLimitRemain", "Invalid value: " + remain);
+                    return 0;
                 }
             }
         }
