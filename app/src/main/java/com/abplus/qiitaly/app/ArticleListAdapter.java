@@ -159,7 +159,7 @@ public class ArticleListAdapter extends BaseAdapter {
         //なにもしない
     }
 
-    public void reload(final Runnable runnable) {
+    public void reload(@NotNull final Runnable runnable) {
         items.clear();
         load(new Backend.Callback<List<Item>>() {
             @Override
@@ -168,32 +168,26 @@ public class ArticleListAdapter extends BaseAdapter {
                 items.addAll(result);
                 ArticleListAdapter.this.nextUrl = nextUrl;
                 ArticleListAdapter.this.rateLimitRemain = rateLimitRemain;
-                if (runnable != null) {
-                    runnable.run();
-                }
+                runnable.run();
                 save(result);
             }
 
             @Override
             public void onException(Throwable throwable) {
                 throwable.printStackTrace();
-                if (runnable != null) {
-                    runnable.run();
-                }
+                runnable.run();
                 Dialogs.errorMessage(activity, R.string.err_response, throwable.getLocalizedMessage());
             }
 
             @Override
             public void onError(String errorReason) {
-                if (runnable != null) {
-                    runnable.run();
-                }
+                runnable.run();
                 Dialogs.errorMessage(activity, R.string.err_response, errorReason);
             }
         });
     }
 
-    public void readMore(final Runnable runnable) {
+    public void readMore(@NotNull final Runnable runnable) {
         if (nextUrl != null) {
             Backend.sharedInstance().moreItems(nextUrl, new Backend.Callback<List<Item>>() {
                 @Override
@@ -208,29 +202,23 @@ public class ArticleListAdapter extends BaseAdapter {
                     save(additional);
                     ArticleListAdapter.this.nextUrl = nextUrl;
                     ArticleListAdapter.this.rateLimitRemain = rateLimitRemain;
-                    if (runnable != null) {
-                        runnable.run();
-                    }
+                    runnable.run();
                 }
 
                 @Override
                 public void onException(Throwable throwable) {
                     throwable.printStackTrace();
                     Dialogs.errorMessage(activity, R.string.err_response, throwable.getLocalizedMessage());
-                    if (runnable != null) {
-                        runnable.run();
-                    }
+                    runnable.run();
                 }
 
                 @Override
                 public void onError(String errorReason) {
                     Dialogs.errorMessage(activity, R.string.err_response, errorReason);
-                    if (runnable != null) {
-                        runnable.run();
-                    }
+                    runnable.run();
                 }
             });
-        } else if (runnable != null) {
+        } else {
             runnable.run();
         }
     }
@@ -253,7 +241,6 @@ public class ArticleListAdapter extends BaseAdapter {
 
             @Override
             protected void onPostExecute(@NotNull Void result) {
-//                loading = false;
                 notifyDataSetChanged();
             }
         }.execute();
@@ -272,7 +259,6 @@ public class ArticleListAdapter extends BaseAdapter {
         ForWhatsNew(Activity activity) {
             super(activity);
             title = activity.getString(R.string.home_whats_new);
-            reload(null);
         }
 
         @Override
@@ -286,7 +272,6 @@ public class ArticleListAdapter extends BaseAdapter {
         ForContributes(Activity activity) {
             super(activity);
             title = activity.getString(R.string.home_self_topic);
-            reload(null);
         }
 
         @Override
@@ -300,7 +285,6 @@ public class ArticleListAdapter extends BaseAdapter {
         ForStocks(Activity activity) {
             super(activity);
             title = activity.getString(R.string.home_stocks);
-            reload(null);
         }
 
         @Override
@@ -317,7 +301,6 @@ public class ArticleListAdapter extends BaseAdapter {
             super(activity);
             title = user.getUrlName();
             this.user = user;
-            reload(null);
         }
 
         @Override
@@ -334,7 +317,6 @@ public class ArticleListAdapter extends BaseAdapter {
             super(activity);
             title = tag.getName();
             this.tag = tag;
-            reload(null);
         }
 
         @Override
@@ -351,10 +333,9 @@ public class ArticleListAdapter extends BaseAdapter {
             super(activity);
             title = query;
             this.query = query;
-            reload(null);
         }
 
-        public void reload(String query, final Runnable runnable) {
+        public void reload(String query, @NotNull final Runnable runnable) {
             this.query = query;
             reload(runnable);
         }
