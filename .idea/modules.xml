@@ -3,9 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Qiitaly.iml" filepath="$PROJECT_DIR$/Qiitaly.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Qiitaly.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Qiitaly.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/data/Qiitaly.data.iml" filepath="$PROJECT_DIR$/.idea/modules/data/Qiitaly.data.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/domain/Qiitaly.domain.iml" filepath="$PROJECT_DIR$/.idea/modules/domain/Qiitaly.domain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
 </project>
+
