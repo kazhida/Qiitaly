@@ -61,6 +61,7 @@ private fun IosApp() {
                 articleFlow = appState.items,
                 authenticatedUserFlow = appState.authenticatedUser,
                 isRefreshingFlow = appState.isRefreshingItems,
+                isLoadingFlow = appState.isLoadingItems,
                 onRefresh = appState::refreshItems,
                 onLoadMore = appState::loadNextItemPage,
                 onShowFolloweeItems = appState::showFolloweeItems,
@@ -111,6 +112,9 @@ private class IosAppState(
     private val _isRefreshingItems = MutableStateFlow(false)
     val isRefreshingItems = _isRefreshingItems.asStateFlow()
 
+    private val _isLoadingItems = MutableStateFlow(false)
+    val isLoadingItems = _isLoadingItems.asStateFlow()
+
     private val _itemQuery = MutableStateFlow<String?>(null)
     private val itemQuery = _itemQuery.asStateFlow()
 
@@ -118,7 +122,8 @@ private class IosAppState(
     private var followeeItemQuery: String? = null
     private var followingTagItemQuery: String? = null
     private var nextItemPage = 1
-    private var isLoadingItems = false
+    private var isLoadingNextItemPage = false
+    private var loadingApiCallCount = 0
     private var isItemLastPage = true
     private var authenticationJob: Job? = null
 
@@ -169,7 +174,7 @@ private class IosAppState(
     }
 
     fun refreshItems() {
-        if (isLoadingItems) return
+        if (isLoadingNextItemPage) return
 
         scope.launch {
             _isRefreshingItems.value = true
@@ -206,7 +211,7 @@ private class IosAppState(
         scope.launch {
             itemQuery.collectLatest { query ->
                 nextItemPage = 1
-                isLoadingItems = false
+                isLoadingNextItemPage = false
                 isItemLastPage = false
                 _items.value = emptyList()
                 loadNextItemPage(query)
@@ -216,6 +221,7 @@ private class IosAppState(
 
     private fun loadItems(accessToken: String) {
         scope.launch(Dispatchers.Default) {
+            beginApiLoading()
             runCatching {
                 val authenticatedUser = qiitaRepository.getAuthenticatedUser(accessToken)
                 _authenticatedUser.value = authenticatedUser
@@ -232,6 +238,7 @@ private class IosAppState(
                     println("Failed to get Qiita items. ${error.message}")
                 }
             }
+            endApiLoading()
         }
     }
 
@@ -246,9 +253,10 @@ private class IosAppState(
     }
 
     private suspend fun loadNextItemPage(query: String?) {
-        if (isLoadingItems || isItemLastPage) return
+        if (isLoadingNextItemPage || isItemLastPage) return
 
-        isLoadingItems = true
+        isLoadingNextItemPage = true
+        beginApiLoading()
         try {
             val newItems = qiitaRepository.getItems(
                 page = nextItemPage,
@@ -278,9 +286,20 @@ private class IosAppState(
             }
         } finally {
             if (itemQuery.value == query) {
-                isLoadingItems = false
+                isLoadingNextItemPage = false
             }
+            endApiLoading()
         }
+    }
+
+    private fun beginApiLoading() {
+        loadingApiCallCount += 1
+        _isLoadingItems.value = true
+    }
+
+    private fun endApiLoading() {
+        loadingApiCallCount = (loadingApiCallCount - 1).coerceAtLeast(0)
+        _isLoadingItems.value = loadingApiCallCount > 0
     }
 
     private suspend fun getAllFolloweeIds(userId: String): List<String> {

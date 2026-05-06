@@ -60,6 +60,7 @@ fun TimelineScreen(
     articleFlow: StateFlow<List<Article>>,
     authenticatedUserFlow: StateFlow<AuthenticatedUser?>,
     isRefreshingFlow: StateFlow<Boolean>,
+    isLoadingFlow: StateFlow<Boolean>,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
     onShowFolloweeItems: () -> Unit,
@@ -227,6 +228,7 @@ fun TimelineScreen(
                 ItemList(
                     articleFlow = articleFlow,
                     isRefreshingFlow = isRefreshingFlow,
+                    isLoadingFlow = isLoadingFlow,
                     modifier = Modifier.padding(paddingValues).padding(16.dp),
                     onRefresh = onRefresh,
                     onLoadMore = onLoadMore,
