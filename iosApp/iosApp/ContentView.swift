@@ -13,9 +13,12 @@ struct ComposeView: UIViewControllerRepresentable {
 
 struct ContentView: View {
     var body: some View {
-        ComposeView().ignoresSafeArea()
+        ComposeView()
+            .ignoresSafeArea()
+            .onOpenURL { url in
+                OAuthRedirectState.shared.handleRedirectUrl(url: url.absoluteString)
+            }
     }
 }
-
 
 

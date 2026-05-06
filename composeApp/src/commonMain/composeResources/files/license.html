@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Third-Party Licenses | Qiitaly</title>
+  <style>
+    :root {
+      --bg: #f7f8f5;
+      --surface: #ffffff;
+      --surface-soft: #eef5ee;
+      --ink: #172018;
+      --muted: #5f6c61;
+      --line: #dce4dc;
+      --accent: #2e7d32;
+      --accent-dark: #185a1f;
+      --code-bg: #eef1ed;
+      --shadow: 0 14px 36px rgba(23, 32, 24, 0.1);
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(46, 125, 50, 0.1), transparent 260px),
+        var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--accent-dark);
+      text-decoration-thickness: 0.08em;
+      text-underline-offset: 0.18em;
+    }
+
+    code {
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.35rem;
+      background: var(--code-bg);
+      color: #26352a;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      overflow-wrap: anywhere;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    header {
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .label {
+      margin: 0 0 8px;
+      color: var(--accent-dark);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .summary {
+      max-width: 780px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .meta-card {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+    }
+
+    .meta-title {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .meta-card span:last-child {
+      overflow-wrap: anywhere;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin: 18px 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 8px 22px rgba(23, 32, 24, 0.08);
+      backdrop-filter: blur(14px);
+    }
+
+    input[type="search"] {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    input[type="search"]:focus {
+      border-color: var(--accent);
+      outline: 3px solid rgba(46, 125, 50, 0.14);
+    }
+
+    .count {
+      min-width: 116px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      position: sticky;
+      top: 70px;
+      z-index: 1;
+      background: #f1f6f1;
+      color: #26352a;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    tbody tr:hover {
+      background: #f8fbf8;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .library {
+      min-width: 260px;
+      font-weight: 700;
+    }
+
+    .versions {
+      min-width: 140px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .license {
+      min-width: 170px;
+      font-weight: 650;
+    }
+
+    .empty {
+      display: none;
+      padding: 28px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    footer {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        padding-top: 14px;
+      }
+
+      header {
+        padding: 20px;
+      }
+
+      .meta {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .count {
+        width: 100%;
+      }
+
+      th {
+        top: 112px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="label">Qiitaly</p>
+      <h1>Third-Party Library Licenses</h1>
+      <p class="summary">
+        This page lists the licenses for runtime and compile dependencies resolved for the shared app targets.
+        Test-only, debug-only, and annotation-processor-only dependencies are not included.
+      </p>
+      <section class="meta" aria-label="License metadata">
+        <div class="meta-card">
+          <span class="meta-title">Generated</span>
+          <span>2026-04-29</span>
+        </div>
+        <div class="meta-card">
+          <span class="meta-title">Scope</span>
+          <span>Android release runtime, iOS Arm64 compile, iOS simulator Arm64 compile</span>
+        </div>
+        <div class="meta-card">
+          <span class="meta-title">Grouping</span>
+          <span>Android, JVM, and iOS platform variants are grouped with their base library.</span>
+        </div>
+      </section>
+    </header>
+
+    <section class="toolbar" aria-label="License search">
+      <input id="search" type="search" placeholder="Search libraries, artifacts, versions, or licenses" autocomplete="off">
+      <div class="count"><span id="visible-count">0</span> shown</div>
+    </section>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Library / Artifact group</th>
+            <th>Version</th>
+            <th>License</th>
+            <th>License URL</th>
+          </tr>
+        </thead>
+        <tbody id="licenses">
+          <tr><td class="library">Accompanist DrawablePainter <code>com.google.accompanist:accompanist-drawablepainter</code></td><td class="versions">0.37.3</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Activity <code>androidx.activity:*</code></td><td class="versions">1.13.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Annotation <code>androidx.annotation:*</code></td><td class="versions">1.4.1, 1.9.1</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX AppCompat resources <code>androidx.appcompat:appcompat-resources</code></td><td class="versions">1.7.1</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Arch Core <code>androidx.arch.core:*</code></td><td class="versions">2.2.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Autofill <code>androidx.autofill:autofill</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Browser <code>androidx.browser:browser</code></td><td class="versions">1.9.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Collection <code>androidx.collection:*</code></td><td class="versions">1.5.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Compose Animation <code>androidx.compose.animation:*</code></td><td class="versions">1.10.5</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Compose Foundation <code>androidx.compose.foundation:*</code></td><td class="versions">1.10.5</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Compose Material <code>androidx.compose.material:*</code></td><td class="versions">1.7.6, 1.9.4</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Compose Material3 <code>androidx.compose.material3:*</code></td><td class="versions">1.5.0-alpha08</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Compose Runtime <code>androidx.compose.runtime:*</code></td><td class="versions">1.10.5</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Compose UI <code>androidx.compose.ui:*</code></td><td class="versions">1.10.5</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Concurrent Futures <code>androidx.concurrent:concurrent-futures</code></td><td class="versions">1.1.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Core <code>androidx.core:*</code></td><td class="versions">1.0.0, 1.18.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX CustomView <code>androidx.customview:*</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX DataStore <code>androidx.datastore:*</code></td><td class="versions">1.1.7</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX DocumentFile <code>androidx.documentfile:documentfile</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX DynamicAnimation <code>androidx.dynamicanimation:dynamicanimation</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Emoji2 <code>androidx.emoji2:emoji2</code></td><td class="versions">1.4.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX ExifInterface <code>androidx.exifinterface:exifinterface</code></td><td class="versions">1.4.2</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Fragment <code>androidx.fragment:fragment</code></td><td class="versions">1.5.1</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Graphics <code>androidx.graphics:*</code></td><td class="versions">1.0.1, 1.1.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Interpolator <code>androidx.interpolator:interpolator</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Legacy Support Core Utils <code>androidx.legacy:legacy-support-core-utils</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Lifecycle <code>androidx.lifecycle:*</code> <code>org.jetbrains.androidx.lifecycle:*</code></td><td class="versions">2.10.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Loader <code>androidx.loader:loader</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX LocalBroadcastManager <code>androidx.localbroadcastmanager:localbroadcastmanager</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Navigation <code>androidx.navigation:*</code></td><td class="versions">2.9.7</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX NavigationEvent <code>androidx.navigationevent:*</code></td><td class="versions">1.0.0, 1.0.2</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Print <code>androidx.print:print</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX ProfileInstaller <code>androidx.profileinstaller:profileinstaller</code></td><td class="versions">1.4.1</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX SavedState <code>androidx.savedstate:*</code> <code>org.jetbrains.androidx.savedstate:*</code></td><td class="versions">1.3.6, 1.4.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Security Crypto <code>androidx.security:*</code></td><td class="versions">1.1.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Startup <code>androidx.startup:startup-runtime</code></td><td class="versions">1.2.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Tracing <code>androidx.tracing:tracing</code></td><td class="versions">1.2.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Transition <code>androidx.transition:transition</code></td><td class="versions">1.6.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX VectorDrawable <code>androidx.vectordrawable:*</code></td><td class="versions">1.1.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX VersionedParcelable <code>androidx.versionedparcelable:versionedparcelable</code></td><td class="versions">1.1.1</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX ViewPager <code>androidx.viewpager:viewpager</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX WebKit <code>androidx.webkit:webkit</code></td><td class="versions">1.15.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">AndroidX Window <code>androidx.window:*</code></td><td class="versions">1.5.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Coil <code>io.coil-kt.coil3:*</code></td><td class="versions">3.4.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Dagger / Hilt <code>com.google.dagger:*</code></td><td class="versions">2.58</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">FindBugs JSR305 <code>com.google.code.findbugs:jsr305</code></td><td class="versions">3.0.2</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Google Gson <code>com.google.code.gson:gson</code></td><td class="versions">2.8.9</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Google Tink <code>com.google.crypto.tink:tink-android</code></td><td class="versions">1.8.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Guava ListenableFuture <code>com.google.guava:listenablefuture</code></td><td class="versions">1.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Jakarta Inject API <code>jakarta.inject:jakarta.inject-api</code></td><td class="versions">2.0.1</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Javax Inject <code>javax.inject:javax.inject</code></td><td class="versions">1</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">JetBrains Annotations <code>org.jetbrains:annotations</code></td><td class="versions">23.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">JetBrains Compose Multiplatform <code>org.jetbrains.compose.*:*</code></td><td class="versions">1.7.3, 1.9.3, 1.10.0-alpha05, 1.10.3</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">JetBrains Skiko <code>org.jetbrains.skiko:*</code></td><td class="versions">0.9.37.4</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">JSpecify <code>org.jspecify:jspecify</code></td><td class="versions">1.0.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Kotlin standard library <code>org.jetbrains.kotlin:*</code></td><td class="versions">1.9.22, 2.3.21</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Kotlinx AtomicFU <code>org.jetbrains.kotlinx:atomicfu*</code></td><td class="versions">0.32.1</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Kotlinx Coroutines <code>org.jetbrains.kotlinx:kotlinx-coroutines-*</code></td><td class="versions">1.10.2</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Kotlinx DateTime <code>org.jetbrains.kotlinx:kotlinx-datetime*</code></td><td class="versions">0.7.1</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Kotlinx IO <code>org.jetbrains.kotlinx:kotlinx-io-*</code></td><td class="versions">0.8.2, 0.9.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Kotlinx Serialization <code>org.jetbrains.kotlinx:kotlinx-serialization-*</code></td><td class="versions">1.6.3, 1.9.0, 1.11.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Ktor <code>io.ktor:*</code></td><td class="versions">3.3.1, 3.4.3</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Multiplatform Settings <code>com.russhwolf:multiplatform-settings*</code></td><td class="versions">1.3.0</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">OkHttp <code>com.squareup.okhttp3:*</code></td><td class="versions">5.3.2</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">Okio <code>com.squareup.okio:*</code></td><td class="versions">3.16.4</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">OIDC Kotlin Multiplatform <code>io.github.kalinjul.kotlin.multiplatform:*</code></td><td class="versions">0.16.5</td><td class="license">Apache License 2.0</td><td><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">https://www.apache.org/licenses/LICENSE-2.0.txt</a></td></tr>
+          <tr><td class="library">SLF4J API <code>org.slf4j:slf4j-api</code></td><td class="versions">2.0.17</td><td class="license">MIT License</td><td><a href="https://opensource.org/license/mit">https://opensource.org/license/mit</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p id="empty" class="empty">No licenses match the current search.</p>
+
+    <footer>
+      Source: <code>commonMain/composeResources/files/license.txt</code>
+    </footer>
+  </main>
+
+  <script>
+    const search = document.getElementById("search");
+    const rows = Array.from(document.querySelectorAll("#licenses tr"));
+    const count = document.getElementById("visible-count");
+    const empty = document.getElementById("empty");
+
+    function updateFilter() {
+      const query = search.value.trim().toLowerCase();
+      let visible = 0;
+
+      for (const row of rows) {
+        const match = row.textContent.toLowerCase().includes(query);
+        row.hidden = !match;
+        if (match) visible += 1;
+      }
+
+      count.textContent = String(visible);
+      empty.style.display = visible === 0 ? "block" : "none";
+    }
+
+    search.addEventListener("input", updateFilter);
+    updateFilter();
+  </script>
+</body>
+</html>

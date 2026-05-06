@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Third-Party Licenses | TriAheads</title>
+  <style>
+    :root {
+      --bg: #f5efe4;
+      --panel: rgba(255, 252, 245, 0.9);
+      --panel-solid: #fffaf1;
+      --ink: #211b15;
+      --muted: #776c60;
+      --line: rgba(74, 57, 38, 0.15);
+      --accent: #c35428;
+      --accent-2: #206f68;
+      --accent-3: #f2b84b;
+      --shadow: 0 22px 60px rgba(62, 43, 24, 0.16);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --mono: "SFMono-Regular", "Cascadia Code", "Liberation Mono", Menlo, monospace;
+      --sans: Avenir, "Avenir Next", "Trebuchet MS", Verdana, sans-serif;
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 16% 10%, rgba(242, 184, 75, 0.36), transparent 30rem),
+        radial-gradient(circle at 86% 12%, rgba(32, 111, 104, 0.18), transparent 28rem),
+        linear-gradient(135deg, #f7ead6 0%, var(--bg) 46%, #e9dcc8 100%);
+    }
+
+    body {
+      min-height: 100%;
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      content: "";
+      background-image:
+        linear-gradient(rgba(33, 27, 21, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(33, 27, 21, 0.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent 72%);
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 64px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(28px, 5vw, 56px);
+      border: 1px solid rgba(255, 255, 255, 0.68);
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(135deg, rgba(255, 250, 241, 0.94), rgba(255, 246, 228, 0.74)),
+        linear-gradient(120deg, rgba(195, 84, 40, 0.08), rgba(32, 111, 104, 0.08));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      position: absolute;
+      right: -95px;
+      bottom: -115px;
+      width: 310px;
+      height: 310px;
+      content: "";
+      border: 38px solid rgba(195, 84, 40, 0.14);
+      border-radius: 50%;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 16px;
+      color: var(--accent-2);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 34px;
+      height: 2px;
+      content: "";
+      background: currentColor;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(2.35rem, 8vw, 5.8rem);
+      line-height: 0.92;
+      letter-spacing: -0.075em;
+    }
+
+    .intro {
+      max-width: 720px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2.2vw, 1.18rem);
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin: 22px 0;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 22px;
+      background: rgba(255, 250, 241, 0.76);
+      box-shadow: 0 12px 34px rgba(62, 43, 24, 0.1);
+      backdrop-filter: blur(18px);
+    }
+
+    .search {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .search:focus {
+      border-color: rgba(195, 84, 40, 0.58);
+      box-shadow: 0 0 0 4px rgba(195, 84, 40, 0.12);
+    }
+
+    .count {
+      min-width: 118px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fffaf1;
+      font-family: var(--mono);
+      font-size: 0.84rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .license-panel {
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: var(--radius-lg);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+
+    th {
+      position: sticky;
+      top: 88px;
+      z-index: 5;
+      padding: 16px 18px;
+      background: #2a2119;
+      color: #fff4df;
+      font-size: 0.73rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 18px;
+      border-top: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    tbody tr {
+      transition: background 140ms ease, transform 140ms ease;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.38);
+    }
+
+    tbody tr:hover {
+      background: rgba(242, 184, 75, 0.16);
+    }
+
+    code {
+      padding: 0.14em 0.38em;
+      border-radius: 7px;
+      background: rgba(32, 111, 104, 0.11);
+      color: #174f4b;
+      font-family: var(--mono);
+      font-size: 0.88em;
+    }
+
+    a {
+      color: var(--accent);
+      font-weight: 800;
+      text-underline-offset: 0.2em;
+    }
+
+    .license-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(32, 111, 104, 0.12);
+      color: #174f4b;
+      font-size: 0.86rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .version {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+
+    .notes {
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .empty,
+    .error {
+      padding: 34px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .error {
+      color: #8b2f1b;
+    }
+
+    .footer {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 14px;
+      }
+
+      .hero {
+        padding: 26px 20px;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .count {
+        width: 100%;
+      }
+
+      .license-panel {
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .table-wrap {
+        overflow: visible;
+      }
+
+      table,
+      thead,
+      tbody,
+      tr,
+      th,
+      td {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody {
+        display: grid;
+        gap: 14px;
+      }
+
+      tr {
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        border-radius: 22px;
+        background: var(--panel-solid);
+        box-shadow: 0 14px 32px rgba(62, 43, 24, 0.1);
+      }
+
+      tbody tr:nth-child(even),
+      tbody tr:hover {
+        background: var(--panel-solid);
+      }
+
+      td {
+        display: grid;
+        grid-template-columns: 118px 1fr;
+        gap: 12px;
+        padding: 12px 16px;
+        border-top: 1px solid var(--line);
+      }
+
+      td:first-child {
+        border-top: 0;
+        padding-top: 16px;
+      }
+
+      td:last-child {
+        padding-bottom: 16px;
+      }
+
+      td::before {
+        content: attr(data-label);
+        color: var(--accent-2);
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .hero,
+      .toolbar,
+      .license-panel {
+        animation: rise 520ms ease both;
+      }
+
+      .toolbar {
+        animation-delay: 80ms;
+      }
+
+      .license-panel {
+        animation-delay: 140ms;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow">TriAheads</p>
+      <h1 id="page-title">Third-Party Licenses</h1>
+      <p class="intro" id="intro">Runtime dependency licenses loaded from <code>license.txt</code>.</p>
+    </section>
+
+    <section class="toolbar" aria-label="License controls">
+      <input class="search" id="search" type="search" placeholder="Filter by library, license, version, or notes" autocomplete="off">
+      <div class="count" id="count">Loading...</div>
+    </section>
+
+    <section class="license-panel" aria-live="polite">
+      <div class="table-wrap" id="table-wrap">
+        <p class="empty">Loading license data...</p>
+      </div>
+    </section>
+
+    <p class="footer">This page is generated in the browser from the bundled license text file.</p>
+  </main>
+
+  <script>
+    const state = {
+      headers: [],
+      rows: [],
+      filteredRows: []
+    };
+
+    const introEl = document.querySelector("#intro");
+    const tableWrapEl = document.querySelector("#table-wrap");
+    const searchEl = document.querySelector("#search");
+    const countEl = document.querySelector("#count");
+
+    function escapeHtml(value) {
+      return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderInlineMarkdown(value) {
+      const escaped = escapeHtml(value);
+      return escaped.replace(/`([^`]+)`/g, "<code>$1</code>");
+    }
+
+    function splitMarkdownRow(line) {
+      return line
+        .trim()
+        .replace(/^\|/, "")
+        .replace(/\|$/, "")
+        .split("|")
+        .map((cell) => cell.trim());
+    }
+
+    function parseLicenseText(text) {
+      const lines = text.split(/\r?\n/);
+      const title = lines[0] || "Third-Party Licenses";
+      const metaLines = [];
+      const tableLines = [];
+      let inTable = false;
+
+      for (const line of lines.slice(1)) {
+        if (line.trim().startsWith("|")) {
+          inTable = true;
+          tableLines.push(line);
+        } else if (!inTable && line.trim()) {
+          metaLines.push(line.trim());
+        }
+      }
+
+      const headers = splitMarkdownRow(tableLines[0] || "");
+      const rows = tableLines
+        .slice(2)
+        .filter((line) => line.trim().startsWith("|"))
+        .map(splitMarkdownRow)
+        .filter((row) => row.length === headers.length);
+
+      return { title, metaLines, headers, rows };
+    }
+
+    function renderMeta(title, metaLines) {
+      document.title = `${title} | TriAheads`;
+      const note = metaLines.find((line) => line.startsWith("Note:")) || "";
+
+      introEl.innerHTML = note
+        ? renderInlineMarkdown(note.replace(/^Note:\s*/, ""))
+        : "Runtime dependency licenses loaded from <code>license.txt</code>.";
+    }
+
+    function cellHtml(header, value) {
+      if (header === "License") {
+        return `<span class="license-pill">${escapeHtml(value)}</span>`;
+      }
+
+      if (header === "License URL" && /^https?:\/\//.test(value)) {
+        const safeUrl = escapeHtml(value);
+        return `<a href="${safeUrl}" rel="noopener noreferrer">${safeUrl}</a>`;
+      }
+
+      if (header === "Resolved version(s)") {
+        return `<span class="version">${escapeHtml(value)}</span>`;
+      }
+
+      if (header === "Notes") {
+        return `<span class="notes">${renderInlineMarkdown(value)}</span>`;
+      }
+
+      return renderInlineMarkdown(value);
+    }
+
+    function renderTable() {
+      const rows = state.filteredRows;
+      countEl.textContent = `${rows.length} / ${state.rows.length}`;
+
+      if (!rows.length) {
+        tableWrapEl.innerHTML = '<p class="empty">No matching licenses.</p>';
+        return;
+      }
+
+      const headerHtml = state.headers
+        .map((header) => `<th scope="col">${escapeHtml(header)}</th>`)
+        .join("");
+
+      const bodyHtml = rows.map((row) => {
+        const cells = row.map((cell, index) => {
+          const header = state.headers[index];
+          return `<td data-label="${escapeHtml(header)}">${cellHtml(header, cell)}</td>`;
+        }).join("");
+        return `<tr>${cells}</tr>`;
+      }).join("");
+
+      tableWrapEl.innerHTML = `
+        <table>
+          <thead><tr>${headerHtml}</tr></thead>
+          <tbody>${bodyHtml}</tbody>
+        </table>
+      `;
+    }
+
+    function applyFilter() {
+      const query = searchEl.value.trim().toLowerCase();
+      state.filteredRows = query
+        ? state.rows.filter((row) => row.join(" ").toLowerCase().includes(query))
+        : [...state.rows];
+      renderTable();
+    }
+
+    async function init() {
+      try {
+        const response = await fetch("license.txt", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`Failed to load license.txt (${response.status})`);
+        }
+
+        const parsed = parseLicenseText(await response.text());
+        state.headers = parsed.headers;
+        state.rows = parsed.rows;
+        state.filteredRows = [...parsed.rows];
+
+        renderMeta(parsed.title, parsed.metaLines);
+        renderTable();
+      } catch (error) {
+        countEl.textContent = "Error";
+        tableWrapEl.innerHTML = `
+          <p class="error">
+            Could not load <code>license.txt</code>. Open this file from the app assets
+            or ensure <code>license.txt</code> is in the same directory as this page.
+          </p>
+        `;
+        console.error(error);
+      }
+    }
+
+    searchEl.addEventListener("input", applyFilter);
+    init();
+  </script>
+</body>
+</html>

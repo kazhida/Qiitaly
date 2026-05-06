@@ -1,0 +1,81 @@
+TriAheads Third-Party Library Licenses
+
+Scope: Gradle configuration `:app:releaseRuntimeClasspath`
+Generated: 2026-04-20
+Note: Test-only and debug-only dependencies are not included.
+
+| Library / Artifact group | Resolved version(s) | License | License URL | Notes |
+|---|---:|---|---|---|
+| AndroidX Activity (`androidx.activity:*`) | 1.13.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes `activity`, `activity-compose`, `activity-ktx`. |
+| AndroidX AppCompat resources (`androidx.appcompat:appcompat-resources`) | 1.6.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Annotation (`androidx.annotation:*`) | 1.5.0, 1.9.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes annotation and experimental annotation artifacts. |
+| AndroidX Arch Core (`androidx.arch.core:*`) | 2.2.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Autofill (`androidx.autofill:autofill`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Browser (`androidx.browser:browser`) | 1.4.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Collection (`androidx.collection:*`) | 1.5.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes JVM and KTX artifacts. |
+| AndroidX Compose Animation (`androidx.compose.animation:*`) | 1.10.6 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Managed by Compose BOM. |
+| AndroidX Compose Foundation (`androidx.compose.foundation:*`) | 1.10.6 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Managed by Compose BOM. |
+| AndroidX Compose Material (`androidx.compose.material:*`) | 1.7.8, 1.10.6 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes Material icons and ripple. |
+| AndroidX Compose Material3 (`androidx.compose.material3:material3-android`) | 1.4.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Managed by Compose BOM. |
+| AndroidX Compose Runtime (`androidx.compose.runtime:*`) | 1.10.6 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Managed by Compose BOM. |
+| AndroidX Compose UI (`androidx.compose.ui:*`) | 1.10.6 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes UI, graphics, text, unit, util, tooling preview. |
+| AndroidX Concurrent Futures (`androidx.concurrent:concurrent-futures`) | 1.1.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Core (`androidx.core:*`) | 1.0.0, 1.18.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes `core`, `core-ktx`, `core-viewtree`. |
+| AndroidX Credentials (`androidx.credentials:*`) | 1.2.0-rc01 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of Firebase Auth. |
+| AndroidX CustomView (`androidx.customview:*`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX DataStore (`androidx.datastore:*`) | 1.1.7 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of Firebase Common. |
+| AndroidX DocumentFile (`androidx.documentfile:documentfile`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX DynamicAnimation (`androidx.dynamicanimation:dynamicanimation`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Emoji2 (`androidx.emoji2:emoji2`) | 1.4.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX ExifInterface (`androidx.exifinterface:exifinterface`) | 1.3.7 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of Coil. |
+| AndroidX Fragment (`androidx.fragment:fragment`) | 1.5.7 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Graphics (`androidx.graphics:graphics-path`) | 1.0.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Interpolator (`androidx.interpolator:interpolator`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Legacy Support Core Utils (`androidx.legacy:legacy-support-core-utils`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Lifecycle (`androidx.lifecycle:*`) | 2.10.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes runtime, ViewModel, LiveData core, process, Compose integrations. |
+| AndroidX Loader (`androidx.loader:loader`) | 1.1.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX LocalBroadcastManager (`androidx.localbroadcastmanager:localbroadcastmanager`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Navigation (`androidx.navigation:*`) | 2.9.7 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes navigation common, runtime, Compose. |
+| AndroidX NavigationEvent (`androidx.navigationevent:*`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Print (`androidx.print:print`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX ProfileInstaller (`androidx.profileinstaller:profileinstaller`) | 1.4.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Room (`androidx.room:*`) | 2.8.4 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes runtime, KTX, common. |
+| AndroidX SavedState (`androidx.savedstate:*`) | 1.4.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes Android, Compose, KTX artifacts. |
+| AndroidX SQLite (`androidx.sqlite:*`) | 2.6.2 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of Room. |
+| AndroidX Startup (`androidx.startup:startup-runtime`) | 1.1.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Tracing (`androidx.tracing:tracing`) | 1.2.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Transition (`androidx.transition:transition`) | 1.6.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX VectorDrawable (`androidx.vectordrawable:*`) | 1.1.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX VersionedParcelable (`androidx.versionedparcelable:versionedparcelable`) | 1.1.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX ViewPager (`androidx.viewpager:viewpager`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| AndroidX Window (`androidx.window:*`) | 1.5.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| Accompanist DrawablePainter (`com.google.accompanist:accompanist-drawablepainter`) | 0.32.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of Coil Compose. |
+| Coil (`io.coil-kt:*`) | 2.7.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes Coil, base, Compose artifacts. |
+| Dagger / Hilt (`com.google.dagger:*`) | 2.57.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes Dagger, Hilt Android, Hilt Core. |
+| Firebase Auth (`com.google.firebase:firebase-auth`) | 24.0.1 | Android Software Development Kit License | https://developer.android.com/studio/terms.html | License from Maven POM metadata. |
+| Firebase Firestore (`com.google.firebase:firebase-firestore`) | 26.0.2 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | License from Maven POM metadata. |
+| Firebase common components (`com.google.firebase:*`) | 17.0.0, 18.0.1, 19.0.0, 20.0.0, 22.0.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes annotations, appcheck interop, auth interop, common, components, database collection, protolite well-known types. |
+| Google Play services Auth (`com.google.android.gms:play-services-auth`) | 21.4.0 | Android Software Development Kit License | https://developer.android.com/studio/terms.html | Direct dependency. |
+| Google Play services (`com.google.android.gms:*`) | 18.0.2, 18.0.10, 18.2.0, 18.5.0, 18.8.0, 20.1.0, 21.4.0 | Android Software Development Kit License | https://developer.android.com/studio/terms.html | Includes auth API phone, auth base, base, basement, FIDO, tasks. |
+| Google Identity (`com.google.android.libraries.identity.googleid:googleid`) | 1.1.0 | Android Software Development Kit License | https://developer.android.com/studio/terms.html | Transitive dependency of Firebase Auth / Credentials. |
+| Google Play Integrity (`com.google.android.play:*`) | 1.3.0, 2.0.3 | Android Software Development Kit License | https://developer.android.com/studio/terms.html | Includes integrity and core-common. |
+| Google reCAPTCHA Android (`com.google.android.recaptcha:recaptcha`) | 18.6.1 | Android Software Development Kit License | https://developer.android.com/studio/terms.html | Transitive dependency of Firebase Auth. |
+| Google Android annotations (`com.google.android:annotations`) | 4.1.1.4 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of gRPC. |
+| Gson (`com.google.code.gson:gson`) | 2.10.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of gRPC. |
+| Guava (`com.google.guava:*`) | 1.0.1, 32.1.3-android, 9999.0-empty-to-avoid-conflict-with-guava | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes Guava, FailureAccess, ListenableFuture placeholder. |
+| Error Prone annotations (`com.google.errorprone:error_prone_annotations`) | 2.26.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| FindBugs JSR305 (`com.google.code.findbugs:jsr305`) | 3.0.2 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency. |
+| Protocol Buffers Java Lite (`com.google.protobuf:protobuf-javalite`) | 3.25.5 | BSD 3-Clause License | https://opensource.org/license/bsd-3-clause | Transitive dependency of Firebase Firestore / gRPC. |
+| OkHttp (`com.squareup.okhttp3:okhttp`) | 4.12.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of Coil. |
+| Okio (`com.squareup.okio:okio-jvm`) | 3.9.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of Coil / OkHttp / DataStore. |
+| gRPC (`io.grpc:*`) | 1.62.2 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes Android, API, context, core, OkHttp, protobuf-lite, stub, util. |
+| PerfMark API (`io.perfmark:perfmark-api`) | 0.26.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of gRPC. |
+| Jakarta Inject API (`jakarta.inject:jakarta.inject-api`) | 2.0.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | License confirmed from artifact `META-INF/LICENSE.txt`. |
+| Javax Inject (`javax.inject:javax.inject`) | 1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of Dagger/Hilt. |
+| Checker Framework Qualifiers (`org.checkerframework:checker-qual`) | 3.37.0 | MIT License | https://opensource.org/license/mit | License confirmed from artifact `META-INF/LICENSE.txt`. |
+| Animal Sniffer annotations (`org.codehaus.mojo:animal-sniffer-annotations`) | 1.23 | MIT License | https://opensource.org/license/mit | Transitive dependency of gRPC. |
+| JetBrains annotations (`org.jetbrains:annotations`) | 23.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | License from Maven POM metadata. |
+| Kotlin standard library (`org.jetbrains.kotlin:*`) | 1.9.0, 1.9.22, 2.3.20 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes stdlib, JDK7/JDK8, Android extensions runtime, parcelize runtime. |
+| Kotlinx Coroutines (`org.jetbrains.kotlinx:*coroutines*`) | 1.9.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Includes Android, core JVM, play-services. |
+| Kotlinx Serialization (`org.jetbrains.kotlinx:kotlinx-serialization-core-jvm`) | 1.7.3 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | Transitive dependency of AndroidX SavedState. |
+| JSpecify (`org.jspecify:jspecify`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt | License from Maven POM metadata. |

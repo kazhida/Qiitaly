@@ -1,0 +1,83 @@
+Qiitaly Third-Party Library Licenses
+
+Scope:
+- Gradle configuration `:composeApp:releaseRuntimeClasspath`
+- Gradle configuration `:composeApp:iosArm64CompileKlibraries`
+- Gradle configuration `:composeApp:iosSimulatorArm64CompileKlibraries`
+
+Generated: 2026-04-29
+
+Notes:
+- Test-only, debug-only, and annotation-processor-only dependencies are not included.
+- Android/JVM/iOS platform variants are grouped with their base library.
+- License names and URLs are taken from Maven POM metadata or packaged license files.
+
+| Library / Artifact group | Resolved version(s) | License | License URL |
+|---|---:|---|---|
+| Accompanist DrawablePainter (`com.google.accompanist:accompanist-drawablepainter`) | 0.37.3 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Activity (`androidx.activity:*`) | 1.13.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Annotation (`androidx.annotation:*`) | 1.4.1, 1.9.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX AppCompat resources (`androidx.appcompat:appcompat-resources`) | 1.7.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Arch Core (`androidx.arch.core:*`) | 2.2.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Autofill (`androidx.autofill:autofill`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Browser (`androidx.browser:browser`) | 1.9.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Collection (`androidx.collection:*`) | 1.5.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Compose Animation (`androidx.compose.animation:*`) | 1.10.5 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Compose Foundation (`androidx.compose.foundation:*`) | 1.10.5 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Compose Material (`androidx.compose.material:*`) | 1.7.6, 1.9.4 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Compose Material3 (`androidx.compose.material3:*`) | 1.5.0-alpha08 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Compose Runtime (`androidx.compose.runtime:*`) | 1.10.5 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Compose UI (`androidx.compose.ui:*`) | 1.10.5 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Concurrent Futures (`androidx.concurrent:concurrent-futures`) | 1.1.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Core (`androidx.core:*`) | 1.0.0, 1.18.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX CustomView (`androidx.customview:*`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX DataStore (`androidx.datastore:*`) | 1.1.7 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX DocumentFile (`androidx.documentfile:documentfile`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX DynamicAnimation (`androidx.dynamicanimation:dynamicanimation`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Emoji2 (`androidx.emoji2:emoji2`) | 1.4.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX ExifInterface (`androidx.exifinterface:exifinterface`) | 1.4.2 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Fragment (`androidx.fragment:fragment`) | 1.5.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Graphics (`androidx.graphics:*`) | 1.0.1, 1.1.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Interpolator (`androidx.interpolator:interpolator`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Legacy Support Core Utils (`androidx.legacy:legacy-support-core-utils`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Lifecycle (`androidx.lifecycle:*`, `org.jetbrains.androidx.lifecycle:*`) | 2.10.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Loader (`androidx.loader:loader`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX LocalBroadcastManager (`androidx.localbroadcastmanager:localbroadcastmanager`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Navigation (`androidx.navigation:*`) | 2.9.7 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX NavigationEvent (`androidx.navigationevent:*`) | 1.0.0, 1.0.2 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Print (`androidx.print:print`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX ProfileInstaller (`androidx.profileinstaller:profileinstaller`) | 1.4.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX SavedState (`androidx.savedstate:*`, `org.jetbrains.androidx.savedstate:*`) | 1.3.6, 1.4.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Security Crypto (`androidx.security:*`) | 1.1.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Startup (`androidx.startup:startup-runtime`) | 1.2.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Tracing (`androidx.tracing:tracing`) | 1.2.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Transition (`androidx.transition:transition`) | 1.6.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX VectorDrawable (`androidx.vectordrawable:*`) | 1.1.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX VersionedParcelable (`androidx.versionedparcelable:versionedparcelable`) | 1.1.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX ViewPager (`androidx.viewpager:viewpager`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX WebKit (`androidx.webkit:webkit`) | 1.15.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| AndroidX Window (`androidx.window:*`) | 1.5.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Coil (`io.coil-kt.coil3:*`) | 3.4.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Dagger / Hilt (`com.google.dagger:*`) | 2.58 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| FindBugs JSR305 (`com.google.code.findbugs:jsr305`) | 3.0.2 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Google Gson (`com.google.code.gson:gson`) | 2.8.9 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Google Tink (`com.google.crypto.tink:tink-android`) | 1.8.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Guava ListenableFuture (`com.google.guava:listenablefuture`) | 1.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Jakarta Inject API (`jakarta.inject:jakarta.inject-api`) | 2.0.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Javax Inject (`javax.inject:javax.inject`) | 1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| JetBrains Annotations (`org.jetbrains:annotations`) | 23.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| JetBrains Compose Multiplatform (`org.jetbrains.compose.*:*`) | 1.7.3, 1.9.3, 1.10.0-alpha05, 1.10.3 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| JetBrains Skiko (`org.jetbrains.skiko:*`) | 0.9.37.4 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| JSpecify (`org.jspecify:jspecify`) | 1.0.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Kotlin standard library (`org.jetbrains.kotlin:*`) | 1.9.22, 2.3.21 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Kotlinx AtomicFU (`org.jetbrains.kotlinx:atomicfu*`) | 0.32.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Kotlinx Coroutines (`org.jetbrains.kotlinx:kotlinx-coroutines-*`) | 1.10.2 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Kotlinx DateTime (`org.jetbrains.kotlinx:kotlinx-datetime*`) | 0.7.1 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Kotlinx IO (`org.jetbrains.kotlinx:kotlinx-io-*`) | 0.8.2, 0.9.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Kotlinx Serialization (`org.jetbrains.kotlinx:kotlinx-serialization-*`) | 1.6.3, 1.9.0, 1.11.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Ktor (`io.ktor:*`) | 3.3.1, 3.4.3 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Multiplatform Settings (`com.russhwolf:multiplatform-settings*`) | 1.3.0 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| OkHttp (`com.squareup.okhttp3:*`) | 5.3.2 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| Okio (`com.squareup.okio:*`) | 3.16.4 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| OIDC Kotlin Multiplatform (`io.github.kalinjul.kotlin.multiplatform:*`) | 0.16.5 | Apache License 2.0 | https://www.apache.org/licenses/LICENSE-2.0.txt |
+| SLF4J API (`org.slf4j:slf4j-api`) | 2.0.17 | MIT License | https://opensource.org/license/mit |
