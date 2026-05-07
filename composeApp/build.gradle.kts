@@ -81,7 +81,7 @@ android {
         applicationId = "com.abplus.qiitaly"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 8
+        versionCode = 9
         versionName = "2.0.0"
         manifestPlaceholders["oidcRedirectScheme"] = "qiitare"
     }
