@@ -105,6 +105,27 @@ open iosApp/iosApp.xcodeproj
 
 Kotlin Framework は Xcode 連携用の Gradle タスク `:composeApp:embedAndSignAppleFrameworkForXcode` によりビルド・埋め込みされます。
 
+## iOSをFirebase App Distributionへ配布
+
+Firebase CLI にログインします。
+
+```shell
+npm install -g firebase-tools
+firebase login
+```
+
+テスターのメールアドレス、または Firebase App Distribution のグループを指定してビルドとアップロードを実行します。
+
+```shell
+FIREBASE_TESTERS=tester@example.com ./scripts/ios-appdistribution.sh
+```
+
+```shell
+FIREBASE_GROUPS=qa-team ./scripts/ios-appdistribution.sh
+```
+
+Firebase の iOS App ID は `iosApp/iosApp/GoogleService-Info.plist` の `GOOGLE_APP_ID` から読み取ります。デフォルトの書き出し方式は `iosApp/Configuration/ExportOptions.plist` で `development` にしています。Ad Hoc 配布に切り替える場合は `method` を `ad-hoc` に変更し、Apple Developer で対象端末を含む Provisioning Profile を用意してください。
+
 ## テスト
 
 共通テストと Android ユニットテストを実行します。
